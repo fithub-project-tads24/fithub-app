@@ -3,7 +3,7 @@
 - `Composer`
 - `Node.js e NPM`
 
-## Como rodar o projeto:
+## Configurar o projeto:
 Após clonaro projeto, Entre na pasta do projeto com:
 ```bash
 cd fithub-project
@@ -31,4 +31,9 @@ touch database/database.sqlite
 ### Atualizndo as dependências do frontend:
 ```
 npm install
+```
+
+## Por fim para rodar o projeto:
+```
+php artisan serve
 ```
