@@ -6,6 +6,7 @@ use App\Http\Requests\RegisterRequest;
 use App\Interfaces\UserProfileRepositoryInterface;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
+use App\Http\Requests\LoginRequest;
 
 class AuthController extends Controller
 {
@@ -45,5 +46,19 @@ class AuthController extends Controller
             'message' => 'Usuário e perfil registrados com sucesso!',
             'user' => $user
         ], 201);
+    }
+
+    public function login(LoginRequest $request): JsonResponse
+    {
+        $credentials = $request->validated();
+
+        if (!$token = $this->authService->login($credentials)) {
+        return response()->json(['error' => 'Não autorizado'], 401);
+    }
+
+    return response()->json([
+        'access_token' => $token,
+        'token_type' => 'bearer',
+    ]);
     }
 }
