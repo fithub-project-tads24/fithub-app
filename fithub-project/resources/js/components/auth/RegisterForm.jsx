@@ -11,7 +11,13 @@ const RegisterForm = () => {
     name: '',
     email: '',
     password: '',
-    password_confirmation: ''
+    password_confirmation: '',
+    age: '',
+    weight: '',
+    height: '',
+    sex: 'male',
+    objective: 'weight_loss',
+    activity_level: 'moderate'
   });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
@@ -60,6 +66,24 @@ const RegisterForm = () => {
       newErrors.password_confirmation = 'Password confirmation is required';
     } else if (formData.password !== formData.password_confirmation) {
       newErrors.password_confirmation = 'Passwords do not match';
+    }
+    
+    if (!formData.age) {
+      newErrors.age = 'Age is required';
+    } else if (formData.age < 12) {
+      newErrors.age = 'You must be at least 12 years old';
+    }
+    
+    if (!formData.weight) {
+      newErrors.weight = 'Weight is required';
+    } else if (formData.weight <= 0) {
+      newErrors.weight = 'Please enter a valid weight';
+    }
+    
+    if (!formData.height) {
+      newErrors.height = 'Height is required';
+    } else if (formData.height <= 0) {
+      newErrors.height = 'Please enter a valid height';
     }
     
     setErrors(newErrors);
@@ -194,6 +218,118 @@ const RegisterForm = () => {
                 </button>
               }
             />
+          </div>
+
+          {/* Profile Information Section */}
+          <div className="pt-4 border-t border-gray-200">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Profile Information</h3>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Input
+                  label="Age"
+                  name="age"
+                  type="number"
+                  required
+                  value={formData.age}
+                  onChange={handleChange}
+                  error={errors.age}
+                  placeholder="Age"
+                  min="12"
+                  max="120"
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="sex" className="block text-sm font-medium leading-6 text-gray-900 mb-2">
+                  Sex <span className="text-red-500 ml-1">*</span>
+                </label>
+                <select
+                  id="sex"
+                  name="sex"
+                  required
+                  value={formData.sex}
+                  onChange={handleChange}
+                  className="block w-full rounded-lg border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
+                >
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 mt-6">
+              <div>
+                <Input
+                  label="Weight (kg)"
+                  name="weight"
+                  type="number"
+                  required
+                  value={formData.weight}
+                  onChange={handleChange}
+                  error={errors.weight}
+                  placeholder="Weight"
+                  min="1"
+                  step="0.1"
+                />
+              </div>
+              
+              <div>
+                <Input
+                  label="Height (cm)"
+                  name="height"
+                  type="number"
+                  required
+                  value={formData.height}
+                  onChange={handleChange}
+                  error={errors.height}
+                  placeholder="Height"
+                  min="1"
+                  step="0.1"
+                />
+              </div>
+            </div>
+            
+            <div className="mt-6">
+              <label htmlFor="objective" className="block text-sm font-medium leading-6 text-gray-900 mb-2">
+                Fitness Objective <span className="text-red-500 ml-1">*</span>
+              </label>
+              <select
+                id="objective"
+                name="objective"
+                required
+                value={formData.objective}
+                onChange={handleChange}
+                className="block w-full rounded-lg border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
+              >
+                <option value="weight_loss">Weight Loss</option>
+                <option value="muscle_gain">Muscle Gain</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="endurance">Endurance</option>
+                <option value="strength">Strength</option>
+              </select>
+            </div>
+            
+            <div className="mt-6">
+              <label htmlFor="activity_level" className="block text-sm font-medium leading-6 text-gray-900 mb-2">
+                Activity Level <span className="text-red-500 ml-1">*</span>
+              </label>
+              <select
+                id="activity_level"
+                name="activity_level"
+                required
+                value={formData.activity_level}
+                onChange={handleChange}
+                className="block w-full rounded-lg border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-500 sm:text-sm sm:leading-6"
+              >
+                <option value="sedentary">Sedentary (little or no exercise)</option>
+                <option value="light">Light (light exercise 1-3 days/week)</option>
+                <option value="moderate">Moderate (moderate exercise 3-5 days/week)</option>
+                <option value="active">Active (hard exercise 6-7 days/week)</option>
+                <option value="very_active">Very Active (very hard exercise, physical job)</option>
+              </select>
+            </div>
           </div>
 
           <div className="flex items-center">
