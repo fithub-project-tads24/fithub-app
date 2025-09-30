@@ -12,10 +12,10 @@ class UserProfile extends Model
 
     protected $fillable = [
         'user_id',
-        'age',
-        'weight',
-        'height',
         'sex',
+        'birth_date',
+        'height',
+        'weight',
         'objective',
         'activity_level',
     ];

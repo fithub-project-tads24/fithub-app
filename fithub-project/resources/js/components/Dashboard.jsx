@@ -1,23 +1,37 @@
-// fithub-project/resources/js/components/Dashboard.jsx
-
-import React from 'react';
-import { useAuth } from '../hooks/useAuth';
-import Button from './ui/Button'; // A importação agora vai funcionar
+import React, { useState } from 'react';
+import GenderStep from './profile-setup/GenderStep';
+import ObjectiveStep from './profile-setup/ObjectiveStep';
+import ActivityLevelStep from './profile-setup/ActivityLevelStep';
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const [step, setStep] = useState(1);
+  const [profileData, setProfileData] = useState({});
+
+  const handleNext = (data) => {
+    setProfileData(prev => ({ ...prev, ...data }));
+    setStep(prev => prev + 1);
+  };
+
+  const handleBack = () => {
+    setStep(prev => prev - 1);
+  };
+
+  const renderStep = () => {
+    switch (step) {
+      case 1:
+        return <GenderStep onNext={handleNext} />;
+      case 2:
+        return <ObjectiveStep onNext={handleNext} onBack={handleBack} />;
+      case 3:
+        return <ActivityLevelStep onBack={handleBack} />;
+      default:
+        return <div>Obrigado!</div>;
+    }
+  };
 
   return (
-    <div className="p-8 text-black bg-white/50 rounded-lg flex flex-col items-center justify-center h-auto m-auto">
-      <h1 className="text-3xl font-bold mb-4">Bem-vindo!</h1>
-      {user && (
-        <p className="text-lg mb-8">
-          Você está logado como <span className="font-semibold">{user.name}</span>.
-        </p>
-      )}
-      <Button onClick={logout} className="bg-red-500 hover:bg-red-700 text-white">
-        Logout
-      </Button>
+    <div className="w-full h-full bg-black">
+      {renderStep()}
     </div>
   );
 };
