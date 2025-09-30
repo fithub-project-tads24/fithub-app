@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
 const RegisterScreen = () => {
@@ -8,21 +8,22 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { register } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
       await register({ name, email, password });
+
+      navigate('/profile-setup');
+
     } catch (err) {
       if (err.response && err.response.status === 422) {
         const errors = err.response.data.errors;
-
         const firstErrorKey = Object.keys(errors)[0];
         const firstErrorMessage = errors[firstErrorKey][0];
-
         setError(firstErrorMessage);
-
       } else {
         setError('Ocorreu um erro. Tente novamente mais tarde.');
       }

@@ -16,11 +16,11 @@ const MobileLayout = ({ children }) => {
               </div>
               <div className="flex items-center gap-1">
                 {/* Signal bars */}
-                <div className="flex gap-1">
-                  <div className="w-1 h-1 bg-black rounded-full"></div>
-                  <div className="w-1 h-2 bg-black rounded-full"></div>
-                  <div className="w-1 h-3 bg-black rounded-full"></div>
-                  <div className="w-1 h-4 bg-black rounded-full"></div>
+                <div className="flex items-end gap-0.5">
+                    <div className="w-1 h-1 bg-black rounded-full"></div>
+                    <div className="w-1 h-2 bg-black rounded-full"></div>
+                    <div className="w-1 h-3 bg-black rounded-full"></div>
+                    <div className="w-1 h-4 bg-black rounded-full"></div>
                 </div>
                 {/* WiFi */}
                 <div className="w-4 h-3 relative ml-1">
