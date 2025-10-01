@@ -22,31 +22,23 @@ class AuthController extends Controller
     }
 
     public function register(RegisterRequest $request): JsonResponse
-    {
-        $validatedData = $request->validated();
+{
+    $validatedData = $request->validated();
 
-        $user = $this->authService->register([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => $validatedData['password'],
-        ]);
+    $user = $this->authService->register([
+        'name' => $validatedData['name'],
+        'email' => $validatedData['email'],
+        'password' => $validatedData['password'],
+    ]);
 
-        $this->userProfileRepository->createOrUpdate($user, [
-            'age' => $validatedData['age'],
-            'weight' => $validatedData['weight'],
-            'height' => $validatedData['height'],
-            'sex' => $validatedData['sex'],
-            'objective' => $validatedData['objective'],
-            'activity_level' => $validatedData['activity_level'],
-        ]);
+    $token = $user->createToken('auth_token')->plainTextToken;
 
-        $user->load('profile');
-
-        return response()->json([
-            'message' => 'Usuário e perfil registrados com sucesso!',
-            'user' => $user
-        ], 201);
-    }
+    return response()->json([
+        'message' => 'Usuário registrado com sucesso!',
+        'user' => $user,
+        'token' => $token,
+    ], 201);
+}
 
     public function login(LoginRequest $request): JsonResponse
     {

@@ -13,6 +13,11 @@ cd fithub-project
 composer install
 ```
 
+### Atualizndo as dependências do frontend:
+```
+npm install
+```
+
 ### Crie suas variáveis de ambiente:
 ```bash
 cp .env.example .env
@@ -28,12 +33,13 @@ php artisan key:generate
 touch database/database.sqlite
 ```
 
-### Atualizndo as dependências do frontend:
-```
-npm install
+
+## Por fim para rodar o projeto, é preciso de 2 terminais rodando, primeiro inicie o servidor backend com:
+```bash
+php artisan serve
 ```
 
-## Por fim para rodar o projeto:
-```
-php artisan serve
+## No segundo terminal inicie com:
+```bash
+npm run dev
 ```
