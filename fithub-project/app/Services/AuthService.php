@@ -1,9 +1,10 @@
 <?php
+
 namespace App\Services;
 
 use App\Interfaces\UserRepositoryInterface;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 
 class AuthService
 {
@@ -16,18 +17,27 @@ class AuthService
 
     public function register(array $data)
     {
-        $data['password'] = Hash::make($data['password']);
-
         return $this->userRepository->create($data);
     }
 
-    public function login(array $credentials)
+    public function login(array $credentials): ?string
     {
-        if (!Auth::attempt($credentials)) {
+        $email = $credentials['email'] ?? null;
+        $password = $credentials['password'] ?? null;
+
+        if (! $email || ! $password) {
             return null;
         }
 
-        $user = $this->userRepository->findByEmail($credentials['email']);
+        $user = User::where('email', $email)->first();
+
+        if (! $user) {
+            return null;
+        }
+
+        if (! Hash::check($password, $user->password)) {
+            return null;
+        }
 
         return $user->createToken('auth_token')->plainTextToken;
     }
