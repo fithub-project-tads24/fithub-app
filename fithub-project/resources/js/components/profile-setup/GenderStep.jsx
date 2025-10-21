@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaMars, FaVenus } from 'react-icons/fa';
-import Button from '../ui/Button';
+import ButtonContinue from '../ui/ButtonContinue';
 
 const GenderStep = ({ onNext }) => {
   const [selectedGender, setSelectedGender] = useState(null);
@@ -34,15 +34,13 @@ const GenderStep = ({ onNext }) => {
         </button>
       </div>
       <div className="flex justify-end">
-        <Button
+        <ButtonContinue
           onClick={() => onNext({ sex: selectedGender })}
           disabled={!selectedGender}
-          className={`px-10 py-3 text-lg ${
-            !selectedGender ? 'bg-gray-500 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'
-          }`}
+          className="px-6"
         >
           Next ▸
-        </Button>
+        </ButtonContinue>
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import Button from '../ui/Button';
+import { useAuth } from '../../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import ButtonContinue from '../ui/ButtonContinue';
 
 const options = [
   'Novato',
@@ -11,6 +13,13 @@ const options = [
 
 const ActivityLevelStep = ({ onNext, onBack }) => {
   const [selected, setSelected] = useState('Intermediário');
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <div className="flex flex-col h-full text-white p-6 justify-between">
@@ -37,12 +46,18 @@ const ActivityLevelStep = ({ onNext, onBack }) => {
         <button onClick={onBack} className="text-gray-400 hover:text-white">
           ◂ Voltar
         </button>
-        <Button
+        <ButtonContinue
           onClick={() => onNext({ activity_level: selected })}
-          className="px-10 py-3 text-lg bg-red-500 hover:bg-red-600"
+          className="px-6"
         >
           Start ▸
-        </Button>
+        </ButtonContinue>
+      </div>
+
+      <div className="text-center mt-4">
+        <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-red-500">
+          Logout para Teste
+        </button>
       </div>
     </div>
   );

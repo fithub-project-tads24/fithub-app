@@ -32,10 +32,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (userData) => {
-    const data = await AuthService.register(userData);
-    localStorage.setItem('token', data.token);
-    const profileData = await AuthService.getProfile();
-    setUser(profileData);
+    await AuthService.register(userData);
   };
 
   const logout = () => {

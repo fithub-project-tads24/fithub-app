@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import ButtonLoginRegister from '../ui/ButtonLoginRegister';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
@@ -16,7 +17,7 @@ const RegisterScreen = () => {
     try {
       await register({ name, email, password });
 
-      navigate('/profile-setup');
+      navigate('/login');
 
     } catch (err) {
       if (err.response && err.response.status === 422) {
@@ -41,7 +42,7 @@ const RegisterScreen = () => {
         <img
           src="/img/fithub-logo.png"
           alt="Fithub Logo"
-          className="w-24 h-24 object-cover"
+          className="w-30 h-30 object-cover"
         />
       </div>
 
@@ -92,12 +93,9 @@ const RegisterScreen = () => {
 
           {/* Botão de Cadastro */}
           <div className="pt-6">
-            <button
-              type="submit"
-              className="w-full bg-white text-black font-semibold py-3 px-4 rounded-full shadow-lg hover:bg-gray-200 transition-colors text-lg"
-            >
+            <ButtonLoginRegister type="submit" fullWidth>
               CADASTRE-SE
-            </button>
+            </ButtonLoginRegister>
           </div>
         </form>
       </div>

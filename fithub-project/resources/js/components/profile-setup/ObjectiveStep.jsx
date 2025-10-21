@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Button from '../ui/Button';
+import ButtonContinue from '../ui/ButtonContinue';
 
 const options = [
   'Ganhar peso',
@@ -37,12 +37,12 @@ const ObjectiveStep = ({ onNext, onBack }) => {
         <button onClick={onBack} className="text-gray-400 hover:text-white">
           ◂ Voltar
         </button>
-        <Button
+        <ButtonContinue
           onClick={() => onNext({ objective: selected })}
-          className="px-10 py-3 text-lg bg-red-500 hover:bg-red-600"
+          className="px-6"
         >
           Next ▸
-        </Button>
+        </ButtonContinue>
       </div>
     </div>
   );
