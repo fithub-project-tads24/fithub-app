@@ -50,14 +50,8 @@ const ActivityLevelStep = ({ onNext, onBack }) => {
           onClick={() => onNext({ activity_level: selected })}
           className="px-6"
         >
-          Start ▸
+          Next ▸
         </ButtonContinue>
-      </div>
-
-      <div className="text-center mt-4">
-        <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-red-500">
-          Logout para Teste
-        </button>
       </div>
     </div>
   );

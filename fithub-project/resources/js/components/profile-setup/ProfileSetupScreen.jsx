@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import GenderStep from './GenderStep';
 import ObjectiveStep from './ObjectiveStep';
 import ActivityLevelStep from './ActivityLevelStep';
+import HeightStep from './HeightStep';
+import YearsOldStep from './YearsOldStep';
+import WeightStep from './WeightStep';
 
 const ProfileSetupScreen = () => {
   const [step, setStep] = useState(1);
@@ -11,11 +14,11 @@ const ProfileSetupScreen = () => {
 
   const handleNext = (data) => {
     setFormData(prev => ({ ...prev, ...data }));
-    if (step === 3) {
+    if (step === 6) {
       const finalData = { ...formData, ...data };
       console.log("Dados completos do perfil:", finalData);
       alert("Dados salvos com sucesso!");
-      navigate('/dashboard');
+      navigate('/profile');
     } else {
       setStep(prev => prev + 1);
     }
@@ -32,6 +35,12 @@ const ProfileSetupScreen = () => {
       return <ObjectiveStep onNext={handleNext} onBack={handleBack} />;
     case 3:
       return <ActivityLevelStep onNext={handleNext} onBack={handleBack} />;
+    case 4:
+      return <HeightStep onNext={handleNext} onBack={handleBack} />;
+    case 5:
+      return <YearsOldStep onNext={handleNext} onBack={handleBack} />;
+    case 6:
+      return <WeightStep onNext={handleNext} onBack={handleBack} />;
     default:
       navigate('/dashboard');
       return null;

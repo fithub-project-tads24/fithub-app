@@ -41,10 +41,32 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const updateProfile = async (payload) => {
+    const updated = await AuthService.updateProfile(payload);
+    if (updated && (updated.name || updated.email)) {
+      setUser(prev => ({ ...prev, ...updated }));
+    } else {
+      try {
+        const fresh = await AuthService.getProfile();
+        setUser(fresh);
+      } catch (e) {
+        console.error('Failed to refresh profile after update', e);
+      }
+    }
+    return true;
+  };
+
+  const deleteAccount = async () => {
+    await AuthService.deleteAccount();
+    localStorage.removeItem('token');
+    setUser(null);
+    return true;
+  };
+
   const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, register, logout, updateProfile, deleteAccount }}>
       {!loading && children}
     </AuthContext.Provider>
   );

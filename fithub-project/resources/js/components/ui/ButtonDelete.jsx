@@ -1,10 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Button = () => {
+const Button = ({ onClick, children = 'Delete', className, style }) => {
   return (
-    <StyledWrapper>
-      <button className="noselect"><span className="text">Delete</span><span className="icon"><svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24"><path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z" /></svg></span></button>
+    <StyledWrapper style={style} className={className}>
+      <button className="noselect" onClick={onClick}>
+        <span className="text">{children}</span>
+        <span className="icon"><svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24"><path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z" /></svg></span>
+      </button>
     </StyledWrapper>
   );
 }
@@ -12,7 +15,7 @@ const Button = () => {
 const StyledWrapper = styled.div`
   button {
    width: 150px;
-   height: 50px;
+   height: 44px; /* align closer to Save button height */
    cursor: pointer;
    display: flex;
    align-items: center;

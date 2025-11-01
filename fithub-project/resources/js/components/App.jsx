@@ -6,9 +6,10 @@ import LoginScreen from './auth/LoginScreen';
 import RegisterScreen from './auth/RegisterScreen';
 import Dashboard from './Dashboard';
 import ProfileSetupScreen from './profile-setup/ProfileSetupScreen';
+import UserScreen from './user-dashboard/UserScreen';
 
 const AppRoutes = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, updateProfile } = useAuth();
 
   if (loading) {
     return (
@@ -44,6 +45,10 @@ const AppRoutes = () => {
       <Route
         path="/profile-setup"
         element={isAuthenticated ? <ProfileSetupScreen /> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/profile"
+        element={isAuthenticated ? <UserScreen onSave={updateProfile} /> : <Navigate to="/login" />}
       />
     </Routes>
   );

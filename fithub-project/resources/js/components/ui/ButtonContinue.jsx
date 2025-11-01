@@ -22,7 +22,7 @@ const StyledWrapper = styled.div`
     transition: all 0.2s;
     padding: 10px 20px;
     border-radius: 100px;
-    background: #ff0000ff;
+    background: #003cffff;
     border: 1px solid transparent;
     display: flex;
     align-items: center;
@@ -30,7 +30,7 @@ const StyledWrapper = styled.div`
   }
 
   button:hover {
-    background: #ef00006c;
+    background: #003cff36;
   }
 
   button > svg {
