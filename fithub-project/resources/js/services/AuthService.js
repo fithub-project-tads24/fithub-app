@@ -36,9 +36,19 @@ const getProfile = () => {
   return apiClient.get('/user').then(response => response.data);
 }
 
+const updateProfile = (payload) => {
+  return apiClient.patch('/user', payload).then(response => response.data);
+}
+
+const deleteAccount = () => {
+  return apiClient.delete('/user').then(response => response.data);
+}
+
 export default {
   register,
   login,
   logout,
-  getProfile
+  getProfile,
+  updateProfile,
+  deleteAccount,
 };

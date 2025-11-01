@@ -10,9 +10,16 @@ class EloquentUserProfileRepository implements UserProfileRepositoryInterface
 {
     public function createOrUpdate(User $user, array $data)
     {
-        return $user->profile()->updateOrCreate(
-            ['user_id' => $user->id],
-            $data
-        );
+        $profile = $user->profile;
+        if ($profile) {
+            $profile->fill($data);
+            $profile->save();
+            return $profile;
+        }
+
+        $profile = UserProfile::create($data);
+        $user->user_profiles_id = $profile->id;
+        $user->save();
+        return $profile;
     }
 }

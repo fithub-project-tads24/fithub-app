@@ -16,4 +16,9 @@ class EloquentUserRepository implements UserRepositoryInterface
     {
         return User::where('email', $email)->first();
     }
+
+    public function delete(User $user): bool
+    {
+        return (bool) $user->delete();
+    }
 }

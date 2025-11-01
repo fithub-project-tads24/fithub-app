@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Interfaces\UserProfileRepositoryInterface;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\UpdateUserRequest;
 
 class AuthController extends Controller
 {
@@ -39,7 +40,7 @@ class AuthController extends Controller
         return response()->json([
             'token' => $token,
         'token_type' => 'bearer',
-        'user' => $request->user(),
+        'user' => $user,
         ], 201);
     }
 
@@ -57,4 +58,21 @@ class AuthController extends Controller
             'user' => $request->user(),
         ]);
 }
+
+    public function deleteAccount(): JsonResponse
+    {
+        $user = request()->user();
+        if (! $user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        $this->authService->deleteAccount($user);
+        return response()->json(['message' => 'Account deleted']);
+    }
+
+    public function update(UpdateUserRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $updated = $this->authService->updateUser($user, $request->validated());
+        return response()->json($updated);
+    }
 }
