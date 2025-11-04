@@ -7,6 +7,9 @@ import RegisterScreen from './auth/RegisterScreen';
 import Dashboard from './Dashboard';
 import ProfileSetupScreen from './profile-setup/ProfileSetupScreen';
 import UserScreen from './user-dashboard/UserScreen';
+import TelaPrincipal from './TelaPrincipal';
+import AgendamentoScreen from './AgendamentoScreen';
+import NotificacoesScreen from './NotificacoesScreen';
 
 const AppRoutes = () => {
   const { isAuthenticated, loading, updateProfile } = useAuth();
@@ -36,6 +39,23 @@ const AppRoutes = () => {
         path="/register"
         element={!isAuthenticated ? <RegisterScreen /> : <Navigate to="/dashboard" />}
       />
+
+    <Route
+        path="/"
+        element={isAuthenticated ? <TelaPrincipal /> : <Navigate to="/login" />}
+    />
+    <Route
+        path="/tela-principal"
+        element={isAuthenticated ? <TelaPrincipal /> : <Navigate to="/login" />}
+    />
+    <Route
+        path="/agendamento"
+        element={isAuthenticated ? <AgendamentoScreen /> : <Navigate to="/login" />}
+        />
+    <Route
+        path="/notificacoes"
+        element={isAuthenticated ? <NotificacoesScreen /> : <Navigate to="/login" />}
+    />
 
       {/* Rotas Protegidas */}
       <Route

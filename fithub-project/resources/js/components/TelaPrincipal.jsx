@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import ButtonLoginRegister from '../ui/ButtonLoginRegister';
+import ButtonLoginRegister from './ui/ButtonLoginRegister';
 
 const TelaPrincipal = () => {
   const navigate = useNavigate();
