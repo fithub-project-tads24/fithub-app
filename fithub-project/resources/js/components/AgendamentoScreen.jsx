@@ -11,9 +11,8 @@ const AgendamentoScreen = () => {
     { id: 2, titulo: 'Dia 02 - Zumba', data: 'Ter 27 Abr', horario: '07:00 - 08:00', imagem: '/img/zumba.jpg' },
   ];
 
-  // Estado da seleção e dos agendamentos já feitos (simulado)
   const [aulaSelecionada, setAulaSelecionada] = useState(null);
-  const [agendados, setAgendados] = useState([]); // array de ids agendados
+  const [agendados, setAgendados] = useState([]); // ids agendados (simulação)
 
   const handleConfirmar = async () => {
     if (!aulaSelecionada) {
@@ -25,7 +24,7 @@ const AgendamentoScreen = () => {
       return;
     }
 
-    // Exemplo de chamada à API:
+    // Chamada API exemplo:
     // await api.post('/schedules', { classId: aulaSelecionada.id });
 
     setAgendados((prev) => [...prev, aulaSelecionada.id]);
@@ -42,7 +41,7 @@ const AgendamentoScreen = () => {
       return;
     }
 
-    // Exemplo de chamada à API:
+    // Chamada API exemplo:
     // await api.delete(`/schedules/${aulaSelecionada.id}`);
 
     setAgendados((prev) => prev.filter((id) => id !== aulaSelecionada.id));
@@ -56,100 +55,91 @@ const AgendamentoScreen = () => {
 
   return (
     <div
-      className="w-full h-full min-h-screen bg-cover bg-center flex flex-col justify-between"
+      className="min-h-screen w-full bg-cover bg-center flex flex-col items-center"
       style={{ backgroundImage: "url('/img/exercise-bg.jpg')" }}
     >
-      {/* Header */}
-      <div className="text-center mt-8">
-        <img
-          src="/img/fithub-logo.png"
-          alt="Fithub Logo"
-          className="w-24 h-24 mx-auto object-cover"
-        />
-        <h1 className="text-white text-3xl font-bold mt-4">
-          AGENDAMENTO
-        </h1>
-      </div>
-
-      {/* Lista de aulas / seleção */}
-      <div className="bg-black/30 backdrop-blur-md rounded-2xl p-6 w-full max-w-sm mx-auto mt-6 mb-28 space-y-4">
-        <p className="text-white/90 text-sm mb-2">
-          Selecione uma aula pré-definida para agendar ou cancelar:
-        </p>
-
-        {aulas.map((aula) => {
-          const isSelected = aulaSelecionada?.id === aula.id;
-          const isAgendada = agendados.includes(aula.id);
-          return (
-            <button
-              key={aula.id}
-              type="button"
-              onClick={() => setAulaSelecionada(aula)}
-              className={`w-full text-left p-4 rounded-lg border transition ${
-                isSelected ? 'bg-white/20 border-white' : 'bg-white/10 border-transparent hover:bg-white/15'
-              } text-white`}
-            >
-              <div className="flex items-center gap-3">
-                <img
-                  src={aula.imagem}
-                  alt={aula.titulo}
-                  className="w-16 h-16 object-cover rounded-md"
-                />
-                <div className="flex-1">
-                  <h2 className="font-bold flex items-center gap-2">
-                    {aula.titulo}
-                    {isAgendada && (
-                      <span className="text-xs px-2 py-0.5 rounded bg-green-600/60">
-                        Agendada
-                      </span>
-                    )}
-                  </h2>
-                  <p className="text-white/90 text-sm">
-                    {aula.data} | {aula.horario}
-                  </p>
-                </div>
-              </div>
-            </button>
-          );
-        })}
-
-        {/* Ações */}
-        <div className="grid grid-cols-2 gap-3 pt-4">
-          <ButtonLoginRegister onClick={handleConfirmar} fullWidth>
-            CONFIRMAR
-          </ButtonLoginRegister>
-
-          <ButtonLoginRegister
-            onClick={handleCancelar}
-            fullWidth
-          >
-            CANCELAR
-          </ButtonLoginRegister>
+      {/* Header mobile */}
+      <header className="w-full max-w-md px-4 pt-6 pb-2">
+        <div className="flex items-center justify-center">
+          <img src="/img/fithub-logo.png" alt="Fithub Logo" className="w-16 h-16 object-cover" />
         </div>
-      </div>
+        <h1 className="text-white text-xl font-bold text-center mt-3">AGENDAMENTO</h1>
+      </header>
 
-      {/* Navbar inferior (igual ao padrão da TelaPrincipal) */}
-      <div className="fixed bottom-0 left-0 w-full bg-black/50 backdrop-blur-md flex justify-around py-3 text-white">
-        <button onClick={handleLogout} className="flex flex-col items-center">
-          <span className="material-icons">logout</span>
-          <span className="text-xs">Logout</span>
-        </button>
+      {/* Conteúdo principal */}
+      <main className="w-full max-w-md px-4 flex-1 mt-4 mb-28">
+        <div className="bg-black/30 backdrop-blur-md rounded-2xl p-4">
+          <p className="text-white/90 text-sm mb-3">Selecione uma aula pré-definida:</p>
 
-        <Link to="/" className="flex flex-col items-center">
-          <span className="material-icons">home</span>
-          <span className="text-xs">Início</span>
-        </Link>
+          <div className="space-y-3">
+            {aulas.map((aula) => {
+              const isSelected = aulaSelecionada?.id === aula.id;
+              const isAgendada = agendados.includes(aula.id);
+              return (
+                <button
+                  key={aula.id}
+                  type="button"
+                  onClick={() => setAulaSelecionada(aula)}
+                  className={`w-full text-left p-3 rounded-lg border transition-colors flex items-center gap-3 ${
+                    isSelected ? 'bg-white/20 border-white' : 'bg-white/10 border-transparent hover:bg-white/15'
+                  }`}
+                >
+                  <img src={aula.imagem} alt={aula.titulo} className="w-14 h-14 object-cover rounded-md" />
+                  <div className="flex-1 text-white">
+                    <div className="flex items-center justify-between">
+                      <h2 className="font-semibold text-sm">{aula.titulo}</h2>
+                      {isAgendada && (
+                        <span className="text-[11px] px-2 py-0.5 rounded bg-green-600/70">Agendada</span>
+                      )}
+                    </div>
+                    <p className="text-white/90 text-xs mt-1">{aula.data} | {aula.horario}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
 
-        <Link to="/agendamento" className="flex flex-col items-center">
-          <span className="material-icons">calendar_today</span>
-          <span className="text-xs">Agendamento</span>
-        </Link>
+          {/* Ações */}
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            <ButtonLoginRegister onClick={handleConfirmar} fullWidth>
+              CONFIRMAR
+            </ButtonLoginRegister>
 
-        <Link to="/notificacoes" className="flex flex-col items-center">
-          <span className="material-icons">notifications</span>
-          <span className="text-xs">Notificações</span>
-        </Link>
-      </div>
+            <ButtonLoginRegister onClick={handleCancelar} fullWidth>
+              CANCELAR
+            </ButtonLoginRegister>
+          </div>
+        </div>
+      </main>
+
+      {/* Navbar inferior mobile (mesmo padrão das outras telas) */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md border-t border-white/10">
+        <div className="max-w-md mx-auto flex justify-between items-center px-6 py-3">
+          <button
+            onClick={handleLogout}
+            className="flex flex-col items-center text-white focus:outline-none"
+            aria-label="Logout"
+          >
+            <span className="material-icons text-xl">logout</span>
+            <span className="text-[10px] mt-1">Sair</span>
+          </button>
+
+          <Link to="/inicio" className="flex flex-col items-center text-white" aria-label="Início">
+            <span className="material-icons text-xl">home</span>
+            <span className="text-[10px] mt-1">Início</span>
+          </Link>
+
+          <Link to="/agendamento" className="flex flex-col items-center text-white" aria-label="Agendamento">
+            <span className="material-icons text-xl">calendar_today</span>
+            <span className="text-[10px] mt-1">Agendar</span>
+          </Link>
+
+          <Link to="/notificacoes" className="flex flex-col items-center text-white relative" aria-label="Notificações">
+            <span className="material-icons text-xl">notifications</span>
+            <span className="text-[10px] mt-1">Notifs</span>
+          </Link>
+        </div>
+      </nav>
     </div>
   );
 };
