@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import GenderStep from './profile-setup/GenderStep';
-import ObjectiveStep from './profile-setup/ObjectiveStep';
-import ActivityLevelStep from './profile-setup/ActivityLevelStep';
-import HeightStep from './profile-setup/HeightStep';
-import YearsOldStep from './profile-setup/YearsOldStep';
-import WeightStep from './profile-setup/WeightStep';
+import GenderStep from '../profile-setup/GenderStep';
+import ObjectiveStep from '../profile-setup/ObjectiveStep';
+import ActivityLevelStep from '../profile-setup/ActivityLevelStep';
+import HeightStep from '../profile-setup/HeightStep';
+import YearsOldStep from '../profile-setup/YearsOldStep';
+import WeightStep from '../profile-setup/WeightStep';
 
 const Dashboard = () => {
   const [step, setStep] = useState(1);

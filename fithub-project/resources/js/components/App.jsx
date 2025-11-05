@@ -4,12 +4,12 @@ import { AuthProvider, useAuth } from '../hooks/useAuth';
 import MobileLayout from './layout/MobileLayout';
 import LoginScreen from './auth/LoginScreen';
 import RegisterScreen from './auth/RegisterScreen';
-import Dashboard from './Dashboard';
+import Dashboard from './screens/Dashboard';
 import ProfileSetupScreen from './profile-setup/ProfileSetupScreen';
 import UserScreen from './user-dashboard/UserScreen';
-import TelaPrincipal from './TelaPrincipal';
-import AgendamentoScreen from './AgendamentoScreen';
-import NotificacoesScreen from './NotificacoesScreen';
+import TelaPrincipal from './screens/TelaPrincipal';
+import AgendamentoScreen from './screens/AgendamentoScreen';
+import NotificacoesScreen from './screens/NotificacoesScreen';
 
 const AppRoutes = () => {
   const { isAuthenticated, loading, updateProfile } = useAuth();

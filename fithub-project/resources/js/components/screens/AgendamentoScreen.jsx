@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import ButtonLoginRegister from './ui/ButtonLoginRegister';
+import ButtonLoginRegister from '../ui/ButtonLoginRegister';
 
 const AgendamentoScreen = () => {
   const navigate = useNavigate();
