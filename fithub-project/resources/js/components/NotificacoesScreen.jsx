@@ -33,108 +33,108 @@ const NotificacoesScreen = () => {
 
   return (
     <div
-      className="w-full h-full min-h-screen bg-cover bg-center flex flex-col justify-between"
+      className="min-h-screen w-full bg-cover bg-center flex flex-col items-center"
       style={{ backgroundImage: "url('/img/exercise-bg.jpg')" }}
     >
-      {/* Header */}
-      <div className="text-center mt-8">
-        <img
-          src="/img/fithub-logo.png"
-          alt="Fithub Logo"
-          className="w-24 h-24 mx-auto object-cover"
-        />
-        <h1 className="text-white text-3xl font-bold mt-4">
-          NOTIFICAÇÕES
-        </h1>
-      </div>
-
-      {/* Conteúdo de notificações */}
-      <div className="bg-black/30 backdrop-blur-md rounded-2xl p-6 w-full max-w-sm mx-auto mt-6 mb-28">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-white/90 text-sm">
-            {notificacoes.filter((n) => !n.lida).length} não lidas
-          </span>
-          <button
-            onClick={marcarTodasComoLidas}
-            className="text-white/90 text-xs hover:text-white underline"
-          >
-            Marcar todas como lidas
-          </button>
+      {/* Header mobile */}
+      <header className="w-full max-w-md px-4 pt-6 pb-2">
+        <div className="flex items-center justify-center">
+          <img src="/img/fithub-logo.png" alt="Fithub Logo" className="w-16 h-16 object-cover" />
         </div>
+        <h1 className="text-white text-xl font-bold text-center mt-3">NOTIFICAÇÕES</h1>
+      </header>
 
-        <div className="space-y-3">
-          {notificacoes.length === 0 ? (
-            <div className="text-white/90 text-center py-6">
-              Sem notificações no momento.
-            </div>
-          ) : (
-            notificacoes.map((n) => (
-              <div
-                key={n.id}
-                className={`rounded-lg p-4 border transition-colors ${
-                  n.lida ? 'bg-white/5 border-white/10' : 'bg-white/15 border-white/40'
-                }`}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="text-white">
-                    <h2 className="font-bold">{n.titulo}</h2>
-                    <p className="text-white/90 text-sm mt-1">{n.mensagem}</p>
-                    <p className="text-white/70 text-xs mt-2">{n.hora}</p>
-                  </div>
-                  <div className="flex flex-col items-end gap-2">
-                    {!n.lida && (
+      {/* Conteúdo principal */}
+      <main className="w-full max-w-md px-4 flex-1 mt-4 mb-28">
+        <div className="bg-black/30 backdrop-blur-md rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-white/90 text-sm">
+              {notificacoes.filter((n) => !n.lida).length} não lidas
+            </span>
+            <button
+              onClick={marcarTodasComoLidas}
+              className="text-white/90 text-xs hover:text-white underline"
+            >
+              Marcar todas como lidas
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {notificacoes.length === 0 ? (
+              <div className="text-white/90 text-center py-6">Sem notificações no momento.</div>
+            ) : (
+              notificacoes.map((n) => (
+                <div
+                  key={n.id}
+                  className={`rounded-lg p-3 border transition-colors ${
+                    n.lida ? 'bg-white/5 border-white/10' : 'bg-white/15 border-white/40'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="text-white flex-1">
+                      <h2 className="font-semibold text-sm">{n.titulo}</h2>
+                      <p className="text-white/90 text-sm mt-1">{n.mensagem}</p>
+                      <p className="text-white/70 text-xs mt-2">{n.hora}</p>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-2">
+                      {!n.lida && (
+                        <button
+                          onClick={() => marcarComoLida(n.id)}
+                          className="text-xs text-white/90 hover:text-white underline"
+                        >
+                          Marcar
+                        </button>
+                      )}
                       <button
-                        onClick={() => marcarComoLida(n.id)}
-                        className="text-xs text-white/90 hover:text-white underline"
+                        onClick={() => excluirNotificacao(n.id)}
+                        className="text-xs text-red-300 hover:text-red-200 underline"
                       >
-                        Marcar como lida
+                        Excluir
                       </button>
-                    )}
-                    <button
-                      onClick={() => excluirNotificacao(n.id)}
-                      className="text-xs text-red-300 hover:text-red-200 underline"
-                    >
-                      Excluir
-                    </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
-          )}
-        </div>
+              ))
+            )}
+          </div>
 
-        <div className="pt-5">
-          <ButtonLoginRegister
-            fullWidth
-            onClick={() => navigate('/agendamento')}
+          <div className="pt-4">
+            <ButtonLoginRegister fullWidth onClick={() => navigate('/agendamento')}>
+              IR PARA AGENDAMENTO
+            </ButtonLoginRegister>
+          </div>
+        </div>
+      </main>
+
+      {/* Navbar inferior mobile  */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md border-t border-white/10">
+        <div className="max-w-md mx-auto flex justify-between items-center px-6 py-3">
+          <button
+            onClick={handleLogout}
+            className="flex flex-col items-center text-white focus:outline-none"
+            aria-label="Logout"
           >
-            IR PARA AGENDAMENTO
-          </ButtonLoginRegister>
+            <span className="material-icons text-xl">logout</span>
+            <span className="text-[10px] mt-1">Sair</span>
+          </button>
+
+          <Link to="/inicio" className="flex flex-col items-center text-white" aria-label="Início">
+            <span className="material-icons text-xl">home</span>
+            <span className="text-[10px] mt-1">Início</span>
+          </Link>
+
+          <Link to="/agendamento" className="flex flex-col items-center text-white" aria-label="Agendamento">
+            <span className="material-icons text-xl">calendar_today</span>
+            <span className="text-[10px] mt-1">Agendar</span>
+          </Link>
+
+          <Link to="/notificacoes" className="flex flex-col items-center text-white relative" aria-label="Notificações">
+            <span className="material-icons text-xl">notifications</span>
+            <span className="text-[10px] mt-1">Notifs</span>
+          </Link>
         </div>
-      </div>
-
-      {/* Navbar inferior (mesmo padrão da TelaPrincipal) */}
-      <div className="fixed bottom-0 left-0 w-full bg-black/50 backdrop-blur-md flex justify-around py-3 text-white">
-        <button onClick={handleLogout} className="flex flex-col items-center">
-          <span className="material-icons">logout</span>
-          <span className="text-xs">Logout</span>
-        </button>
-
-        <Link to="/" className="flex flex-col items-center">
-          <span className="material-icons">home</span>
-          <span className="text-xs">Início</span>
-        </Link>
-
-        <Link to="/agendamento" className="flex flex-col items-center">
-          <span className="material-icons">calendar_today</span>
-          <span className="text-xs">Agendamento</span>
-        </Link>
-
-        <Link to="/notificacoes" className="flex flex-col items-center">
-          <span className="material-icons">notifications</span>
-          <span className="text-xs">Notificações</span>
-        </Link>
-      </div>
+      </nav>
     </div>
   );
 };
