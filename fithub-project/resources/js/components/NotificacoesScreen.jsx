@@ -107,7 +107,7 @@ const NotificacoesScreen = () => {
         </div>
       </main>
 
-      {/* Navbar inferior mobile (mesmo padrão das outras telas) */}
+      {/* Navbar inferior mobile  */}
       <nav className="fixed bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md border-t border-white/10">
         <div className="max-w-md mx-auto flex justify-between items-center px-6 py-3">
           <button
