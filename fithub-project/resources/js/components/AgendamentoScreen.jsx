@@ -41,9 +41,6 @@ const AgendamentoScreen = () => {
       return;
     }
 
-    // Chamada API exemplo:
-    // await api.delete(`/schedules/${aulaSelecionada.id}`);
-
     setAgendados((prev) => prev.filter((id) => id !== aulaSelecionada.id));
     alert(`Agendamento de "${aulaSelecionada.titulo}" foi cancelado.`);
   };
