@@ -2,19 +2,28 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable;
+
+    protected $table = 'users';
+    protected $primaryKey = 'id';
+    public $incrementing = true;
+    protected $keyType = 'int';
+
+    // migrations têm created_at e updated_at
+    public $timestamps = true;
 
     protected $fillable = [
         'name',
         'email',
         'password_hash',
+        'email_verified_at',
+        'remember_token',
         'user_profiles_id',
         'roles_id',
     ];
@@ -24,20 +33,30 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
-    public function profile(): \Illuminate\Database\Eloquent\Relations\HasOne
-    {
-        return $this->hasOne(UserProfile::class, 'id', 'user_profiles_id');
-    }
-
-    public function role(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    // Relações
+    public function role()
     {
         return $this->belongsTo(Role::class, 'roles_id');
+    }
+
+    public function profile()
+    {
+        return $this->belongsTo(UserProfile::class, 'user_profiles_id');
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'users_id');
+    }
+
+    public function restrictions()
+    {
+        return $this->hasMany(Restriction::class, 'users_id');
     }
 }
