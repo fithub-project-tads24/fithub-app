@@ -10,6 +10,8 @@ import UserScreen from './user-dashboard/UserScreen';
 import TelaPrincipal from './screens/TelaPrincipal';
 import AgendamentoScreen from './screens/AgendamentoScreen';
 import NotificacoesScreen from './screens/NotificacoesScreen';
+import EventosScreen from './screens/EventosScreen';
+
 
 const AppRoutes = () => {
   const { isAuthenticated, loading, updateProfile } = useAuth();
@@ -55,6 +57,10 @@ const AppRoutes = () => {
     <Route
         path="/notificacoes"
         element={isAuthenticated ? <NotificacoesScreen /> : <Navigate to="/login" />}
+    />
+<Route
+        path="/cadastro-eventos"
+        element={isAuthenticated ? <EventosScreen/> : <Navigate to="/login" />}
     />
 
       {/* Rotas Protegidas */}
