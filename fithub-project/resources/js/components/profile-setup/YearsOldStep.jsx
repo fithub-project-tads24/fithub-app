@@ -61,20 +61,14 @@ const YearsOldStep = ({ onNext, onBack, defaultValue = 25 }) => {
 	const [age, setAge] = useState(defaultValue);
 	return (
 		<div className="flex flex-col h-full text-white p-6 justify-between">
-			<div className="text-center mt-10">
-				<h2 className="text-3xl font-bold mb-2">Quantos anos você tem?</h2>
-				<p className="text-sm text-gray-400">Isso nos ajuda a criar seu plano personalizado</p>
-			</div>
 			<div className="flex-grow flex items-center justify-center">
 				<AgeWheel value={age} onChange={setAge} />
 			</div>
 			<div className="w-full flex justify-between items-center">
 				<button onClick={onBack} className="text-gray-400 hover:text-white">◂ Voltar</button>
-				<ButtonContinue onClick={() => onNext({ age_years: age })} className="px-6">Next ▸</ButtonContinue>
+				<ButtonContinue onClick={() => onNext({ age: age })} className="px-6">Next ▸</ButtonContinue>
 			</div>
 		</div>
 	);
 };
-
 export default YearsOldStep;
-

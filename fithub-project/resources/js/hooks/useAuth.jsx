@@ -7,6 +7,9 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const hasProfile = !!user?.user_profiles_id;
+  const isAdmin = user?.role?.name === 'Admin';
+
   useEffect(() => {
     const initializeAuth = async () => {
       const token = localStorage.getItem('token');
@@ -15,7 +18,7 @@ export const AuthProvider = ({ children }) => {
           const userData = await AuthService.getProfile();
           setUser(userData);
         } catch (error) {
-          console.error('Failed to fetch user profile, logging out.');
+          console.error('Falha ao carregar perfil, deslogando...', error);
           logout();
         }
       }
@@ -43,15 +46,9 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (payload) => {
     const updated = await AuthService.updateProfile(payload);
-    if (updated && (updated.name || updated.email)) {
-      setUser(prev => ({ ...prev, ...updated }));
-    } else {
-      try {
-        const fresh = await AuthService.getProfile();
-        setUser(fresh);
-      } catch (e) {
-        console.error('Failed to refresh profile after update', e);
-      }
+    if (updated) {
+        const freshUser = await AuthService.getProfile();
+        setUser(freshUser);
     }
     return true;
   };
@@ -66,7 +63,18 @@ export const AuthProvider = ({ children }) => {
   const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, register, logout, updateProfile, deleteAccount }}>
+    <AuthContext.Provider value={{
+        user,
+        isAuthenticated,
+        loading,
+        login,
+        register,
+        logout,
+        updateProfile,
+        deleteAccount,
+        isAdmin,
+        hasProfile
+    }}>
       {!loading && children}
     </AuthContext.Provider>
   );

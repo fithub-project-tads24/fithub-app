@@ -11,6 +11,7 @@ use App\Interfaces\UserProfileRepositoryInterface;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UpdateUserRequest;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -71,6 +72,8 @@ class AuthController extends Controller
 
     public function update(UpdateUserRequest $request): JsonResponse
     {
+        Log::info('Recebendo atualização de perfil:', $request->all());
+
         $user = $request->user();
         $updated = $this->authService->updateUser($user, $request->validated());
         return response()->json($updated);

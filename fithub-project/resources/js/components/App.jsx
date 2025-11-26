@@ -4,12 +4,15 @@ import { AuthProvider, useAuth } from '../hooks/useAuth';
 import MobileLayout from './layout/MobileLayout';
 import LoginScreen from './auth/LoginScreen';
 import RegisterScreen from './auth/RegisterScreen';
-import Dashboard from './Dashboard';
 import ProfileSetupScreen from './profile-setup/ProfileSetupScreen';
 import UserScreen from './user-dashboard/UserScreen';
+import TelaPrincipal from './screens/TelaPrincipal';
+import AgendamentoScreen from './screens/AgendamentoScreen';
+import NotificacoesScreen from './screens/NotificacoesScreen';
+import EventosScreen from './screens/EventosScreen';
 
 const AppRoutes = () => {
-  const { isAuthenticated, loading, updateProfile } = useAuth();
+  const { isAuthenticated, loading, hasProfile, isAdmin, updateProfile } = useAuth();
 
   if (loading) {
     return (
@@ -19,37 +22,56 @@ const AppRoutes = () => {
     );
   }
 
+  const RequireProfile = ({ children }) => {
+    if (!isAuthenticated) return <Navigate to="/login" />;
+    if (!hasProfile) return <Navigate to="/profile-setup" />;
+    return children;
+  };
+
+  const RequireAdmin = ({ children }) => {
+    if (!isAuthenticated) return <Navigate to="/login" />;
+    if (!hasProfile) return <Navigate to="/profile-setup" />;
+
+    if (!isAdmin) {
+        return <Navigate to="/tela-principal" />;
+    }
+
+    return children;
+  };
+
   return (
     <Routes>
-      {/* Rota Padrão */}
+      <Route path="/login" element={!isAuthenticated ? <LoginScreen /> : <Navigate to="/" />} />
+      <Route path="/register" element={!isAuthenticated ? <RegisterScreen /> : <Navigate to="/" />} />
+
+      <Route path="/" element={
+            !isAuthenticated ? <Navigate to="/login" /> :
+            !hasProfile ? <Navigate to="/profile-setup" /> :
+            <Navigate to="/tela-principal" />
+      } />
+
+      <Route path="/profile-setup" element={
+            isAuthenticated ? (hasProfile ? <Navigate to="/tela-principal" /> : <ProfileSetupScreen />) : <Navigate to="/login" />
+      } />
+
+      {/* Rotas Comuns (Alunos e Admins) */}
+      <Route path="/tela-principal" element={<RequireProfile><TelaPrincipal /></RequireProfile>} />
+      <Route path="/agendamento" element={<RequireProfile><AgendamentoScreen /></RequireProfile>} />
+      <Route path="/notificacoes" element={<RequireProfile><NotificacoesScreen /></RequireProfile>} />
+      <Route path="/profile" element={<RequireProfile><UserScreen onSave={updateProfile} /></RequireProfile>} />
+
+      {/* Rota Exclusiva de Admin (PROTEGIDA) */}
       <Route
-        path="/"
-        element={isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />}
+        path="/cadastro-eventos"
+        element={
+            <RequireAdmin>
+                <EventosScreen />
+            </RequireAdmin>
+        }
       />
 
-      {/* Rotas Públicas */}
-      <Route
-        path="/login"
-        element={!isAuthenticated ? <LoginScreen /> : <Navigate to="/dashboard" />}
-      />
-      <Route
-        path="/register"
-        element={!isAuthenticated ? <RegisterScreen /> : <Navigate to="/dashboard" />}
-      />
-
-      {/* Rotas Protegidas */}
-      <Route
-        path="/dashboard"
-        element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
-      />
-      <Route
-        path="/profile-setup"
-        element={isAuthenticated ? <ProfileSetupScreen /> : <Navigate to="/login" />}
-      />
-      <Route
-        path="/profile"
-        element={isAuthenticated ? <UserScreen onSave={updateProfile} /> : <Navigate to="/login" />}
-      />
+      <Route path="/dashboard" element={<RequireProfile><TelaPrincipal /></RequireProfile>} />
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 };

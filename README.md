@@ -33,6 +33,11 @@ php artisan key:generate
 touch database/database.sqlite
 ```
 
+## Faça a migration com o comando:
+```bash
+php artisan migrate
+```
+
 
 ## Por fim para rodar o projeto, é preciso de 2 terminais rodando, primeiro inicie o servidor backend com:
 ```bash
@@ -43,3 +48,12 @@ php artisan serve
 ```bash
 npm run dev
 ```
+
+Gerenciamento de risco
+1.Nome do risco
+2.Impacto
+3.Prevenção
+4.Contingência
+5.Responsável
+
+Gerenciamento das aquisições

@@ -98,10 +98,6 @@ const HeightStep = ({ onNext, onBack, defaultValue = 168 }) => {
 
 	return (
 		<div className="flex flex-col h-full text-white p-6 justify-between">
-			<div className="text-center mt-10">
-				<h2 className="text-3xl font-bold mb-2">Qual é a sua altura?</h2>
-			</div>
-
 			<div className="flex-grow flex items-center justify-center">
 				<Wheel value={height} onChange={setHeight} />
 			</div>
@@ -111,7 +107,7 @@ const HeightStep = ({ onNext, onBack, defaultValue = 168 }) => {
 					◂ Voltar
 				</button>
 				<ButtonContinue
-					onClick={() => onNext({ height_cm: height })}
+					onClick={() => onNext({ height: height })}
 					className="px-6"
 				>
 					Next ▸
@@ -120,6 +116,5 @@ const HeightStep = ({ onNext, onBack, defaultValue = 168 }) => {
 		</div>
 	);
 };
-
 export default HeightStep;
 
