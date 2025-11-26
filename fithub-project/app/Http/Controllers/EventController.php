@@ -10,7 +10,6 @@ class EventController extends Controller
 {
     public function index()
     {
-        // Retorna eventos e verifica se o usuário atual (Auth::id()) está na lista de participantes
         $events = Event::with('participants')->get()->map(function ($event) {
             $event->is_registered = $event->participants->contains(Auth::id());
             return $event;
@@ -35,7 +34,7 @@ class EventController extends Controller
             'data' => $request->data,
             'hora' => $request->hora,
             'local' => $request->local,
-            'created_by' => Auth::id(), // Pega o ID do Admin logado
+            'created_by' => Auth::id(),
         ]);
 
         return response()->json($event, 201);
@@ -46,12 +45,24 @@ class EventController extends Controller
         $event = Event::findOrFail($id);
         $userId = Auth::id();
 
-        // Verifica se já está inscrito para evitar duplicidade
         if (!$event->participants()->where('user_id', $userId)->exists()) {
             $event->participants()->attach($userId);
             return response()->json(['message' => 'Inscrição realizada!', 'success' => true]);
         }
 
         return response()->json(['message' => 'Você já está inscrito neste evento.', 'success' => false], 400);
+    }
+
+    public function leave($id)
+    {
+        $event = Event::findOrFail($id);
+        $userId = Auth::id();
+
+        if ($event->participants()->where('user_id', $userId)->exists()) {
+            $event->participants()->detach($userId);
+            return response()->json(['message' => 'Inscrição cancelada com sucesso!', 'success' => true]);
+        }
+
+        return response()->json(['message' => 'Você não estava inscrito neste evento.', 'success' => false], 400);
     }
 }

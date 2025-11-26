@@ -15,28 +15,33 @@ const ProfileSetupScreen = () => {
   const { updateProfile } = useAuth();
 
   const handleNext = async (data) => {
+    let newData = { ...data };
     let formattedData = { ...data };
 
-    if (data.age_years) formattedData = { age: data.age_years };
-    if (data.weight_kg) formattedData = { weight: data.weight_kg };
-    if (data.height_cm) formattedData = { height: data.height_cm };
+    if (data.age_years) formattedData.age = data.age_years;
+    if (data.weight_kg) formattedData.weight = data.weight_kg;
+    if (data.height_cm) formattedData.height = data.height_cm;
+    if (data.gender) formattedData.sex = data.gender;
+    if (data.goal) formattedData.objective = data.goal;
 
-    const updatedData = { ...formData, ...formattedData };
-    setFormData(updatedData);
+    const updatedTotalData = { ...formData, ...formattedData };
+    setFormData(updatedTotalData);
+
+    console.log(`Dados acumulados até passo ${step}:`, updatedTotalData);
 
     if (step === 6) {
-      console.log("ENVIANDO PARA API:", updatedData);
+        try {
+            await updateProfile(updatedTotalData);
+            alert("Perfil concluído! Vamos treinar.");
 
-      try {
-        await updateProfile(updatedData);
-        alert("Perfil salvo com sucesso!");
-        window.location.href = '/tela-principal';
-      } catch (error) {
-        console.error("Erro no envio:", error);
-        alert("Erro ao salvar. Verifique o console.");
-      }
+            window.location.href = '/tela-principal';
+
+        } catch (error) {
+            console.error("Erro:", error);
+            window.location.href = '/tela-principal';
+        }
     } else {
-      setStep(prev => prev + 1);
+        setStep(prev => prev + 1);
     }
   };
 

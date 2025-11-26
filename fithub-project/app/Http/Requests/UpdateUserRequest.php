@@ -16,17 +16,17 @@ class UpdateUserRequest extends FormRequest
     {
         $userId = $this->user()?->id;
         return [
-            // Campos do Usuário
             'name' => ['sometimes', 'string', 'max:255'],
             'email' => ['sometimes', 'email', Rule::unique('users', 'email')->ignore($userId)],
 
-            // Campos do Perfil (EXATAMENTE COMO NO BANCO)
-            'age' => ['sometimes', 'nullable', 'integer'],
-            'weight' => ['sometimes', 'nullable', 'numeric'],
-            'height' => ['sometimes', 'nullable', 'numeric'],
-            'sex' => ['sometimes', 'nullable', 'string'],
-            'objective' => ['sometimes', 'nullable', 'string'],
-            'activity_level' => ['sometimes', 'nullable', 'string'],
+            'password' => ['sometimes', 'nullable', 'string', 'min:8'],
+
+            'age' => ['nullable', 'integer'],
+            'weight' => ['nullable', 'numeric'],
+            'height' => ['nullable', 'numeric'],
+            'sex' => ['nullable', 'string'],
+            'objective' => ['nullable', 'string'],
+            'activity_level' => ['nullable', 'string'],
         ];
     }
 }

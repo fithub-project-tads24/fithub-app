@@ -8,7 +8,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\BookingController;
 
 Route::get('/user', function (Request $request) {
-    return $request->user();
+    return $request->user()->load('role', 'profile');
 })->middleware('auth:sanctum');
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/events', [EventController::class, 'index']);
     Route::post('/events', [EventController::class, 'store']);
     Route::post('/events/{id}/join', [EventController::class, 'join']);
+    Route::post('/events/{id}/leave', [EventController::class, 'leave']);
 
     Route::post('/roles', [RoleController::class, 'store']);
     Route::put('/roles/{role}', [RoleController::class, 'update']);

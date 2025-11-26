@@ -48,3 +48,12 @@ php artisan serve
 ```bash
 npm run dev
 ```
+
+Gerenciamento de risco
+1.Nome do risco
+2.Impacto
+3.Prevenção
+4.Contingência
+5.Responsável
+
+Gerenciamento das aquisições
