@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\EventController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -18,6 +19,10 @@ Route::get('/roles/{role}', [RoleController::class, 'show']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/user', [AuthController::class, 'update']);
     Route::delete('/user', [AuthController::class, 'deleteAccount']);
+
+    Route::get('/events', [EventController::class, 'index']);
+    Route::post('/events', [EventController::class, 'store']);
+    Route::post('/events/{id}/join', [EventController::class, 'join']);
 
     Route::post('/roles', [RoleController::class, 'store']);
     Route::put('/roles/{role}', [RoleController::class, 'update']);

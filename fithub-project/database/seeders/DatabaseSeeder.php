@@ -4,29 +4,24 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Role;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        foreach (['Admin', 'Student'] as $r) {
-            Role::firstOrCreate(['name' => $r]);
-        }
+        // 1. Criar Roles
+        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
+        $studentRole = Role::firstOrCreate(['name' => 'Student']);
 
-        $user = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
-        $student = Role::where('name', 'Student')->first();
-        if ($student && ! $user->roles_id) {
-            $user->roles_id = $student->id;
-            $user->save();
+        if (!User::where('email', 'admin@fithub.com')->exists()) {
+            User::create([
+                'name' => 'Admin',
+                'email' => 'admin@fithub.com',
+                'password_hash' => Hash::make('12345678'),
+                'roles_id' => $adminRole->id,
+            ]);
         }
     }
 }
