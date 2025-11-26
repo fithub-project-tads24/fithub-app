@@ -1,114 +1,85 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from '../hooks/useAuth';
-import MobileLayout from './layout/MobileLayout';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import AuthService from '../services/AuthService';
 
-import LoginScreen from './auth/LoginScreen';
-import RegisterScreen from './auth/RegisterScreen';
-import Dashboard from './screens/Dashboard';
-import ProfileSetupScreen from './profile-setup/ProfileSetupScreen';
-import UserScreen from './user-dashboard/UserScreen';
-import TelaPrincipal from './screens/TelaPrincipal';
-import AgendamentoScreen from './screens/AgendamentoScreen';
-import NotificacoesScreen from './screens/NotificacoesScreen';
-import EventosScreen from './screens/EventosScreen';
+const AuthContext = createContext(null);
 
-const AppRoutes = () => {
-  const { isAuthenticated, loading, hasProfile, updateProfile } = useAuth();
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full bg-black text-white">
-        Carregando...
-      </div>
-    );
-  }
+  const hasProfile = !!user?.user_profiles_id;
+  const isAdmin = user?.role?.name === 'Admin';
 
-  const RequireProfile = ({ children }) => {
-    if (!isAuthenticated) return <Navigate to="/login" />;
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const userData = await AuthService.getProfile();
+          setUser(userData);
+        } catch (error) {
+          console.error('Falha ao carregar perfil, deslogando...', error);
+          logout();
+        }
+      }
+      setLoading(false);
+    };
+    initializeAuth();
+  }, []);
 
-    if (!hasProfile) {
-        return <Navigate to="/profile-setup" />;
-    }
-    return children;
+  const login = async (credentials) => {
+    const data = await AuthService.login(credentials);
+    localStorage.setItem('token', data.token);
+    const userData = await AuthService.getProfile();
+    setUser(userData);
   };
 
+  const register = async (userData) => {
+    await AuthService.register(userData);
+  };
+
+  const logout = () => {
+    AuthService.logout();
+    localStorage.removeItem('token');
+    setUser(null);
+  };
+
+  const updateProfile = async (payload) => {
+    const updated = await AuthService.updateProfile(payload);
+    if (updated) {
+        const freshUser = await AuthService.getProfile();
+        setUser(freshUser);
+    }
+    return true;
+  };
+
+  const deleteAccount = async () => {
+    await AuthService.deleteAccount();
+    localStorage.removeItem('token');
+    setUser(null);
+    return true;
+  };
+
+  const isAuthenticated = !!user;
+
   return (
-    <Routes>
-      {/* --- Rotas Públicas --- */}
-      <Route
-        path="/login"
-        element={!isAuthenticated ? <LoginScreen /> : <Navigate to="/" />}
-      />
-      <Route
-        path="/register"
-        element={!isAuthenticated ? <RegisterScreen /> : <Navigate to="/" />}
-      />
-
-      {/* --- Rota Raiz --- */}
-      <Route
-        path="/"
-        element={
-            !isAuthenticated ? <Navigate to="/login" /> :
-            !hasProfile ? <Navigate to="/profile-setup" /> :
-            <Navigate to="/tela-principal" />
-        }
-      />
-
-      {/* --- Rota de Configuração de Perfil --- */}
-      <Route
-        path="/profile-setup"
-        element={
-            isAuthenticated ?
-            (hasProfile ? <Navigate to="/tela-principal" /> : <ProfileSetupScreen />)
-            : <Navigate to="/login" />
-        }
-      />
-
-      {/* --- Rotas Protegidas (Exigem Login + Perfil) --- */}
-      <Route
-        path="/tela-principal"
-        element={<RequireProfile><TelaPrincipal /></RequireProfile>}
-      />
-      <Route
-        path="/agendamento"
-        element={<RequireProfile><AgendamentoScreen /></RequireProfile>}
-      />
-      <Route
-        path="/notificacoes"
-        element={<RequireProfile><NotificacoesScreen /></RequireProfile>}
-      />
-      <Route
-        path="/cadastro-eventos"
-        element={<RequireProfile><EventosScreen /></RequireProfile>}
-      />
-
-      {/* Rotas secundárias */}
-      <Route
-        path="/profile"
-        element={<RequireProfile><UserScreen onSave={updateProfile} /></RequireProfile>}
-      />
-      <Route
-        path="/dashboard"
-        element={<RequireProfile><Dashboard /></RequireProfile>}
-      />
-
-      {/* Rota para qualquer URL desconhecida */}
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
+    <AuthContext.Provider value={{
+        user,
+        isAuthenticated,
+        loading,
+        login,
+        register,
+        logout,
+        updateProfile,
+        deleteAccount,
+        isAdmin,
+        hasProfile
+    }}>
+      {!loading && children}
+    </AuthContext.Provider>
   );
 };
 
-const App = () => {
-  return (
-    <Router>
-      <AuthProvider>
-        <MobileLayout>
-          <AppRoutes />
-        </MobileLayout>
-      </AuthProvider>
-    </Router>
-  );
+export const useAuth = () => {
+  return useContext(AuthContext);
 };
-
-export default App;

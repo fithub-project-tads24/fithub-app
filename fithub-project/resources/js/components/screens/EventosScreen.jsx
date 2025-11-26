@@ -1,153 +1,102 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { ArrowLeft } from 'lucide-react';
 
-const CadastroEvento = () => {
-  const navigate = useNavigate();
-  const [evento, setEvento] = useState({
-    titulo: '',
-    descricao: '',
-    data: '',
-    hora: '',
-    local: '',
-  });
+const EventosScreen = () => {
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        titulo: '',
+        descricao: '',
+        data: '',
+        hora: '',
+        local: ''
+    });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEvento((prev) => ({ ...prev, [name]: value }));
-  };
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Evento cadastrado:', evento);
-    alert('Evento cadastrado com sucesso!');
-    navigate('/inicio');
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post('/api/events', formData, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert("Evento criado com sucesso!");
+            navigate('/tela-principal');
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao criar evento. Verifique os dados.");
+        }
+    };
 
-  const handleLogout = () => {
-    console.log('Logout realizado');
-    navigate('/login');
-  };
+    return (
+        <div className="bg-black min-h-screen text-white p-6 pb-24">
+            <header className="flex items-center mb-6">
+                <button onClick={() => navigate(-1)} className="p-2 bg-gray-800 rounded-full mr-4">
+                    <ArrowLeft size={20} />
+                </button>
+                <h1 className="text-xl font-bold">Novo Evento</h1>
+            </header>
 
-  return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black">
-      {/* Moldura do "celular" */}
-      <div className="w-[320px] h-[700px] bg-black/40 backdrop-blur-xl rounded-[40px] shadow-2xl overflow-hidden relative border border-white/10 flex flex-col text-white">
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                    <label className="block text-sm text-gray-400 mb-1">Título do Evento</label>
+                    <input
+                        type="text" name="titulo" required
+                        className="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 focus:border-purple-500 outline-none"
+                        onChange={handleChange}
+                    />
+                </div>
 
-        {/* Cabeçalho */}
-        <header className="px-4 pt-6 pb-2">
-          <div className="flex justify-center">
-            <img
-              src="/img/fithub-logo.png"
-              alt="Fithub Logo"
-              className="w-16 h-16 object-cover"
-            />
-          </div>
-          <h1 className="text-lg font-bold text-center mt-2 text-white">
-            CADASTRAR EVENTO
-          </h1>
-        </header>
+                <div>
+                    <label className="block text-sm text-gray-400 mb-1">Descrição</label>
+                    <textarea
+                        name="descricao" rows="3" required
+                        className="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 focus:border-purple-500 outline-none"
+                        onChange={handleChange}
+                    ></textarea>
+                </div>
 
-        {/* Formulário */}
-        <main className="flex-1 overflow-y-auto px-4">
-          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-            <div>
-              <label className="block text-sm font-semibold mb-1 text-white/80">
-                Título
-              </label>
-              <input
-                type="text"
-                name="titulo"
-                value={evento.titulo}
-                onChange={handleChange}
-                required
-                placeholder="Ex: Aula Especial"
-                className="w-full p-2 rounded-lg bg-white/10 border border-white/10 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-600"
-              />
-            </div>
+                <div className="flex gap-4">
+                    <div className="w-1/2">
+                        <label className="block text-sm text-gray-400 mb-1">Data</label>
+                        <input
+                            type="date" name="data" required
+                            className="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 outline-none"
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <div className="w-1/2">
+                        <label className="block text-sm text-gray-400 mb-1">Horário</label>
+                        <input
+                            type="time" name="hora" required
+                            className="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 outline-none"
+                            onChange={handleChange}
+                        />
+                    </div>
+                </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-1 text-white/80">
-                Descrição
-              </label>
-              <textarea
-                name="descricao"
-                value={evento.descricao}
-                onChange={handleChange}
-                rows="3"
-                placeholder="Ex: Aula comemorativa de aniversário da academia."
-                required
-                className="w-full p-2 rounded-lg bg-white/10 border border-white/10 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-600 resize-none"
-              />
-            </div>
+                <div>
+                    <label className="block text-sm text-gray-400 mb-1">Local</label>
+                    <input
+                        type="text" name="local" placeholder="Ex: Quadra 2, Sala de Espelhos..." required
+                        className="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 outline-none"
+                        onChange={handleChange}
+                    />
+                </div>
 
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <label className="block text-sm font-semibold mb-1 text-white/80">
-                  Data
-                </label>
-                <input
-                  type="date"
-                  name="data"
-                  value={evento.data}
-                  onChange={handleChange}
-                  required
-                  className="w-full p-2 rounded-lg bg-white/10 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
-                />
-              </div>
-
-              <div className="flex-1">
-                <label className="block text-sm font-semibold mb-1 text-white/80">
-                  Hora
-                </label>
-                <input
-                  type="time"
-                  name="hora"
-                  value={evento.hora}
-                  onChange={handleChange}
-                  required
-                  className="w-full p-2 rounded-lg bg-white/10 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-1 text-white/80">
-                Local
-              </label>
-              <input
-                type="text"
-                name="local"
-                value={evento.local}
-                onChange={handleChange}
-                placeholder="Ex: Sala 2 ou Área Externa"
-                required
-                className="w-full p-2 rounded-lg bg-white/10 border border-white/10 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-600"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-3 mt-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full text-white font-semibold shadow-lg hover:opacity-90 transition"
-            >
-              CADASTRAR EVENTO
-            </button>
-          </form>
-        </main>
-
-        {/* Navbar inferior */}
-        <nav className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-md border-t border-white/10 py-2">
-          <div className="flex justify-around text-white text-sm">
-            <Link to="/tela-principal" className="flex flex-col items-center hover:opacity-80">
-              <span className="text-[10px] mt-1">Início</span>
-            </Link>
-            <button onClick={handleLogout} className="flex flex-col items-center hover:opacity-80">
-              <span className="text-[10px] mt-1">Sair</span>
-            </button>
-          </div>
-        </nav>
-      </div>
-    </div>
-  );
+                <button
+                    type="submit"
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 rounded-xl mt-6 shadow-lg transition"
+                >
+                    PUBLICAR EVENTO
+                </button>
+            </form>
+        </div>
+    );
 };
 
-export default CadastroEvento; 
+export default EventosScreen;

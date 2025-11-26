@@ -8,42 +8,50 @@ use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
-    // Listar todos os eventos (Para Alunos e Admins)
     public function index()
     {
-        return Event::with('participants')->get();
+        // Retorna eventos e verifica se o usuário atual (Auth::id()) está na lista de participantes
+        $events = Event::with('participants')->get()->map(function ($event) {
+            $event->is_registered = $event->participants->contains(Auth::id());
+            return $event;
+        });
+
+        return response()->json($events);
     }
 
-    // Criar evento (Apenas Admin)
     public function store(Request $request)
     {
-        // Validação simples para MVP
-        $data = $request->validate([
-            'titulo' => 'required',
-            'descricao' => 'required',
+        $request->validate([
+            'titulo' => 'required|string',
+            'descricao' => 'required|string',
             'data' => 'required',
             'hora' => 'required',
             'local' => 'required',
         ]);
 
-        $data['created_by'] = Auth::id();
-        $event = Event::create($data);
+        $event = Event::create([
+            'titulo' => $request->titulo,
+            'descricao' => $request->descricao,
+            'data' => $request->data,
+            'hora' => $request->hora,
+            'local' => $request->local,
+            'created_by' => Auth::id(), // Pega o ID do Admin logado
+        ]);
 
         return response()->json($event, 201);
     }
 
-    // Inscrever-se no evento (Para Alunos)
     public function join($id)
     {
         $event = Event::findOrFail($id);
-        $user = Auth::user();
+        $userId = Auth::id();
 
-        // Evitar duplicação
-        if (!$event->participants()->where('user_id', $user->id)->exists()) {
-            $event->participants()->attach($user->id);
-            return response()->json(['message' => 'Inscrição realizada com sucesso!']);
+        // Verifica se já está inscrito para evitar duplicidade
+        if (!$event->participants()->where('user_id', $userId)->exists()) {
+            $event->participants()->attach($userId);
+            return response()->json(['message' => 'Inscrição realizada!', 'success' => true]);
         }
 
-        return response()->json(['message' => 'Você já está inscrito.'], 400);
+        return response()->json(['message' => 'Você já está inscrito neste evento.', 'success' => false], 400);
     }
 }

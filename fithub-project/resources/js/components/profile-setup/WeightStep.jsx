@@ -102,9 +102,6 @@ const WeightStep = ({ onNext, onBack, defaultValue = 70 }) => {
 	const [weight, setWeight] = useState(defaultValue);
 	return (
 		<div className="flex flex-col h-full text-white p-6 justify-between">
-			<div className="text-center mt-10">
-				<h2 className="text-3xl font-bold mb-2">Qual é o seu peso?</h2>
-			</div>
 			<div className="flex flex-col items-center gap-4">
 				<div className="text-6xl font-bold">
 					{weight}
@@ -114,11 +111,10 @@ const WeightStep = ({ onNext, onBack, defaultValue = 70 }) => {
 			</div>
 			<div className="w-full flex justify-between items-center">
 				<button onClick={onBack} className="text-gray-400 hover:text-white">◂ Voltar</button>
-				<ButtonContinue onClick={() => onNext({ weight_kg: weight })} className="px-6">Next ▸</ButtonContinue>
+				<ButtonContinue onClick={() => onNext({ weight: weight })} className="px-6">Next ▸</ButtonContinue>
 			</div>
 		</div>
 	);
 };
-
 export default WeightStep;
 

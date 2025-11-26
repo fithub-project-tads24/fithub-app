@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import GenderStep from './GenderStep';
 import ObjectiveStep from './ObjectiveStep';
 import ActivityLevelStep from './ActivityLevelStep';
@@ -11,14 +12,29 @@ const ProfileSetupScreen = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({});
   const navigate = useNavigate();
+  const { updateProfile } = useAuth();
 
-  const handleNext = (data) => {
-    setFormData(prev => ({ ...prev, ...data }));
+  const handleNext = async (data) => {
+    let formattedData = { ...data };
+
+    if (data.age_years) formattedData = { age: data.age_years };
+    if (data.weight_kg) formattedData = { weight: data.weight_kg };
+    if (data.height_cm) formattedData = { height: data.height_cm };
+
+    const updatedData = { ...formData, ...formattedData };
+    setFormData(updatedData);
+
     if (step === 6) {
-      const finalData = { ...formData, ...data };
-      console.log("Dados completos do perfil:", finalData);
-      alert("Dados salvos com sucesso!");
-      navigate('/profile');
+      console.log("ENVIANDO PARA API:", updatedData);
+
+      try {
+        await updateProfile(updatedData);
+        alert("Perfil salvo com sucesso!");
+        window.location.href = '/tela-principal';
+      } catch (error) {
+        console.error("Erro no envio:", error);
+        alert("Erro ao salvar. Verifique o console.");
+      }
     } else {
       setStep(prev => prev + 1);
     }
@@ -29,21 +45,13 @@ const ProfileSetupScreen = () => {
   };
 
   switch (step) {
-    case 1:
-      return <GenderStep onNext={handleNext} />;
-    case 2:
-      return <ObjectiveStep onNext={handleNext} onBack={handleBack} />;
-    case 3:
-      return <ActivityLevelStep onNext={handleNext} onBack={handleBack} />;
-    case 4:
-      return <HeightStep onNext={handleNext} onBack={handleBack} />;
-    case 5:
-      return <YearsOldStep onNext={handleNext} onBack={handleBack} />;
-    case 6:
-      return <WeightStep onNext={handleNext} onBack={handleBack} />;
-    default:
-      navigate('/dashboard');
-      return null;
+    case 1: return <GenderStep onNext={handleNext} />;
+    case 2: return <ObjectiveStep onNext={handleNext} onBack={handleBack} />;
+    case 3: return <ActivityLevelStep onNext={handleNext} onBack={handleBack} />;
+    case 4: return <HeightStep onNext={handleNext} onBack={handleBack} />;
+    case 5: return <YearsOldStep onNext={handleNext} onBack={handleBack} />;
+    case 6: return <WeightStep onNext={handleNext} onBack={handleBack} />;
+    default: return null;
   }
 };
 

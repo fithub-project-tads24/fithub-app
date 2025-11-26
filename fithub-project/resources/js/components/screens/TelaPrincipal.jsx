@@ -1,76 +1,110 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import axios from 'axios';
 
 const TelaPrincipal = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const { user, isAdmin, logout } = useAuth();
+    const [eventos, setEventos] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  const handleLogout = () => {
-    console.log('Logout realizado');
-    navigate('/login');
-  };
+    useEffect(() => {
+        fetchEventos();
+    }, []);
 
-  return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black">
-      {/* Moldura do "celular" */}
-      <div className="w-[320px] h-[700px] bg-black/40 backdrop-blur-xl rounded-[40px] shadow-2xl overflow-hidden relative border border-white/10 flex flex-col text-white">
+    const fetchEventos = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('/api/events', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setEventos(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar eventos", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        {/* Cabeçalho */}
-        <header className="px-4 pt-6 pb-2">
-          <div className="flex justify-center">
-            <img
-              src="/img/fithub-logo.png"
-              alt="Fithub Logo"
-              className="w-16 h-16 object-cover"
-            />
-          </div>
-          <h1 className="text-lg font-bold text-center mt-2 text-white">
-            PLANEJAMENTO DE EXERCÍCIOS
-          </h1>
-        </header>
+    const handleJoin = async (eventId) => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post(`/api/events/${eventId}/join`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert("Inscrição realizada com sucesso!");
+            fetchEventos(); // Recarrega a lista para atualizar o botão
+        } catch (error) {
+            alert("Erro ao se inscrever.");
+        }
+    };
 
-        {/* Conteúdo principal */}
-        <main className="flex-1 overflow-y-auto px-4">
-          {/* Cards horizontais */}
-          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-            <article className="min-w-[220px] w-[220px] bg-white/10 rounded-xl p-3 flex-shrink-0 shadow-md backdrop-blur-md border border-white/10">
-              <h2 className="font-semibold text-md">Yoga</h2>
-              <p className="text-sm mt-1 text-white/90">Seg 26 Abr | 07:00 - 08:00</p>
-            </article>
+    return (
+        <div className="w-full h-full bg-gray-900 text-white overflow-y-auto p-6 pb-24">
+            <header className="flex justify-between items-center mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold">Olá, {user?.name || 'Visitante'}</h1>
+                    <p className="text-gray-400 text-sm">Bem-vindo ao FithHub</p>
+                </div>
+                <button onClick={logout} className="text-red-400 text-sm font-semibold">Sair</button>
+            </header>
 
-            <article className="min-w-[220px] w-[220px] bg-white/10 rounded-xl p-3 flex-shrink-0 shadow-md backdrop-blur-md border border-white/10">
-              <h2 className="font-semibold text-md">Zumba</h2>
-              <p className="text-sm mt-1 text-white/90">Ter 27 Abr | 07:00 - 08:00</p>
-            </article>
-          </div>
+            {/* SEÇÃO EXCLUSIVA DE ADMIN: Criar Evento */}
+            {isAdmin && (
+                <div className="mb-8">
+                    <button
+                        onClick={() => navigate('/cadastro-eventos')}
+                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 py-4 rounded-xl font-bold text-lg shadow-lg hover:opacity-90 transition"
+                    >
+                        + CRIAR NOVO EVENTO
+                    </button>
+                </div>
+            )}
 
-          {/* Botão */}
-          <div className="mt-4">
-            <button
-              onClick={() => navigate('/agendamento')}
-              className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold py-3 rounded-full w-full shadow-lg hover:opacity-90 transition"
-            >
-              AGENDAR NOVA AULA
-            </button>
-          </div>
-        </main>
+            {/* LISTA DE EVENTOS */}
+            <h2 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2">Eventos Disponíveis</h2>
 
-        {/* Navbar inferior */}
-        <nav className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-md border-t border-white/10 py-2">
-          <div className="flex justify-around text-white text-sm">
-            <button onClick={handleLogout} className="flex flex-col items-center hover:opacity-80">
-              <span className="text-[10px] mt-1">Logout</span>
-            </button>
-            <Link to="/agendamento" className="flex flex-col items-center hover:opacity-80">
-              <span className="text-[10px] mt-1">Agendar</span>
-            </Link>
-            <Link to="/notificacoes" className="flex flex-col items-center hover:opacity-80">
-              <span className="text-[10px] mt-1">Notifications</span>
-            </Link>
-          </div>
-        </nav>
-      </div>
-    </div>
-  );
+            {loading ? <p>Carregando...</p> : (
+                <div className="space-y-4">
+                    {eventos.length === 0 && <p className="text-gray-500">Nenhum evento encontrado.</p>}
+
+                    {eventos.map((evento) => (
+                        <div key={evento.id} className="bg-gray-800 p-5 rounded-2xl border border-gray-700 shadow-md">
+                            <h3 className="text-lg font-bold text-purple-400">{evento.titulo}</h3>
+                            <p className="text-sm text-gray-300 mt-1 mb-2">{evento.descricao}</p>
+
+                            <div className="flex justify-between text-xs text-gray-400 mb-4">
+                                <span>📅 {evento.data} às {evento.hora}</span>
+                                <span>📍 {evento.local}</span>
+                            </div>
+
+                            {/* Botão de Ação: Se Admin (Ver Detalhes) / Se User (Participar) */}
+                            {isAdmin ? (
+                                <button className="w-full bg-gray-700 text-gray-300 py-2 rounded-lg text-xs cursor-default">
+                                    Visualização de Admin
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => handleJoin(evento.id)}
+                                    disabled={evento.is_registered}
+                                    className={`w-full py-3 rounded-xl font-bold transition ${
+                                        evento.is_registered
+                                        ? 'bg-green-600/20 text-green-500 cursor-default'
+                                        : 'bg-white text-black hover:bg-gray-200'
+                                    }`}
+                                >
+                                    {evento.is_registered ? 'VOCÊ JÁ ESTÁ INSCRITO ✅' : 'PARTICIPAR AGORA'}
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            <div className="h-20"></div>
+        </div>
+    );
 };
 
 export default TelaPrincipal;

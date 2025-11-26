@@ -1,169 +1,128 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import ButtonLoginRegister from '../ui/ButtonLoginRegister';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { ArrowLeft, Trash2 } from 'lucide-react';
 
 const AgendamentoScreen = () => {
   const navigate = useNavigate();
+  const [data, setData] = useState('');
+  const [hora, setHora] = useState('');
+  const [meusAgendamentos, setMeusAgendamentos] = useState([]);
 
-  const aulas = [
-    { id: 1, titulo: 'Dia 01 - Yoga', data: 'Seg 26 Abr', horario: '07:00 - 08:00', imagem: '/img/yoga.jpg' },
-    { id: 2, titulo: 'Dia 02 - Zumba', data: 'Ter 27 Abr', horario: '07:00 - 08:00', imagem: '/img/zumba.jpg' },
-  ];
+  const horariosDisponiveis = ["06:00", "07:00", "08:00", "09:00", "17:00", "18:00", "19:00", "20:00"];
 
-  const [aulaSelecionada, setAulaSelecionada] = useState(null);
-  const [agendados, setAgendados] = useState([]);
+  useEffect(() => {
+    fetchAgendamentos();
+  }, []);
 
-  const handleConfirmar = () => {
-    if (!aulaSelecionada) {
-      alert('Selecione uma aula para agendar.');
-      return;
+  const fetchAgendamentos = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get('/api/bookings', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        setMeusAgendamentos(res.data);
+    } catch (error) {
+        console.error("Erro ao buscar agendamentos");
     }
-    if (agendados.includes(aulaSelecionada.id)) {
-      alert('Essa aula já está agendada.');
-      return;
-    }
-    setAgendados((prev) => [...prev, aulaSelecionada.id]);
-    alert(`Aula "${aulaSelecionada.titulo}" agendada com sucesso!`);
   };
 
-  const handleCancelar = () => {
-    if (!aulaSelecionada) {
-      alert('Selecione uma aula para cancelar.');
-      return;
+  const handleAgendar = async () => {
+    if (!data || !hora) return alert("Selecione data e hora!");
+
+    try {
+        const token = localStorage.getItem('token');
+        await axios.post('/api/bookings', {
+            data: data,
+            hora_inicio: hora
+        }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        alert("Agendamento confirmado!");
+        fetchAgendamentos(); // Atualiza lista
+    } catch (error) {
+        alert(error.response?.data?.message || "Erro ao agendar.");
     }
-    if (!agendados.includes(aulaSelecionada.id)) {
-      alert('Essa aula não está agendada.');
-      return;
-    }
-    setAgendados((prev) => prev.filter((id) => id !== aulaSelecionada.id));
-    alert(`Agendamento de "${aulaSelecionada.titulo}" foi cancelado.`);
   };
 
-  const handleLogout = () => {
-    navigate('/login');
+  const handleCancelar = async (id) => {
+      if(!confirm("Deseja cancelar?")) return;
+      try {
+        const token = localStorage.getItem('token');
+        await axios.delete(`/api/bookings/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        fetchAgendamentos();
+      } catch (error) {
+          alert("Erro ao cancelar.");
+      }
   };
 
   return (
-    <div
-      className="h-screen w-full bg-cover bg-center flex flex-col items-center justify-between"
-      style={{ backgroundImage: "url('/img/exercise-bg.jpg')" }}
-    >
-      {/* Container principal simulando tela de celular */}
-      <div className="relative w-[390px] h-[800px] bg-black/60 rounded-[30px] shadow-2xl overflow-hidden flex flex-col">
-        {/* Header */}
-        <header className="w-full px-4 pt-6 pb-2 text-center">
-          <img
-            src="/img/fithub-logo.png"
-            alt="Fithub Logo"
-            className="w-16 h-16 object-cover mx-auto mb-2"
-          />
-          <h1 className="text-white text-xl font-bold tracking-wide">AGENDAMENTO</h1>
-        </header>
+    <div className="min-h-screen bg-black text-white p-6 pb-24">
+      <header className="flex items-center mb-6">
+        <button onClick={() => navigate('/tela-principal')} className="p-2 bg-gray-800 rounded-full mr-4">
+            <ArrowLeft size={20} />
+        </button>
+        <h1 className="text-xl font-bold">Agendar Treino</h1>
+      </header>
 
-        {/* Conteúdo com scroll interno */}
-        <main className="flex-1 overflow-y-auto px-5 pb-28">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 mt-4 shadow-lg">
-            <p className="text-white/90 text-sm mb-3">
-              Selecione uma aula pré-definida:
-            </p>
+      {/* Formulário */}
+      <div className="space-y-4 mb-8">
+        <div>
+            <label className="block text-gray-400 mb-2">Data</label>
+            <input
+                type="date"
+                className="w-full bg-gray-900 border border-gray-700 p-3 rounded-xl"
+                value={data}
+                onChange={(e) => setData(e.target.value)}
+            />
+        </div>
 
-            <div className="space-y-3">
-              {aulas.map((aula) => {
-                const isSelected = aulaSelecionada?.id === aula.id;
-                const isAgendada = agendados.includes(aula.id);
-                return (
+        <div>
+            <label className="block text-gray-400 mb-2">Horário Disponível</label>
+            <div className="grid grid-cols-4 gap-2">
+                {horariosDisponiveis.map(h => (
+                    <button
+                        key={h}
+                        onClick={() => setHora(h)}
+                        className={`p-2 rounded-lg text-sm font-bold ${
+                            hora === h ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400'
+                        }`}
+                    >
+                        {h}
+                    </button>
+                ))}
+            </div>
+        </div>
+
+        <button
+            onClick={handleAgendar}
+            className="w-full bg-white text-black font-bold py-3 rounded-xl mt-4 hover:bg-gray-200"
+        >
+            CONFIRMAR AGENDAMENTO
+        </button>
+      </div>
+
+      {/* Lista de Agendamentos */}
+      <h2 className="text-lg font-bold border-b border-gray-800 pb-2 mb-4">Meus Agendamentos</h2>
+      <div className="space-y-3">
+          {meusAgendamentos.length === 0 && <p className="text-gray-500 text-sm">Nenhum treino agendado.</p>}
+
+          {meusAgendamentos.map(booking => (
+              <div key={booking.id} className="bg-gray-900 p-4 rounded-xl flex justify-between items-center border border-gray-800">
+                  <div>
+                      <p className="font-bold text-purple-400">Musculação</p>
+                      <p className="text-sm text-gray-300">{booking.data} às {booking.hora_inicio}</p>
+                  </div>
                   <button
-                    key={aula.id}
-                    type="button"
-                    onClick={() => setAulaSelecionada(aula)}
-                    className={`w-full text-left p-3 rounded-lg border transition-all flex items-center gap-3 ${
-                      isSelected
-                        ? 'bg-white/30 border-white shadow-md'
-                        : 'bg-white/10 hover:bg-white/20 border-transparent'
-                    }`}
+                    onClick={() => handleCancelar(booking.id)}
+                    className="text-red-500 p-2 hover:bg-red-500/10 rounded-full"
                   >
-                    <img
-                      src={aula.imagem}
-                      alt={aula.titulo}
-                      className="w-14 h-14 object-cover rounded-md"
-                    />
-                    <div className="flex-1 text-white">
-                      <div className="flex items-center justify-between">
-                        <h2 className="font-semibold text-sm">{aula.titulo}</h2>
-                        {isAgendada && (
-                          <span className="text-[11px] px-2 py-0.5 rounded bg-green-600/70">
-                            Agendada
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-white/80 text-xs mt-1">
-                        {aula.data} | {aula.horario}
-                      </p>
-                    </div>
+                      <Trash2 size={18} />
                   </button>
-                );
-              })}
-            </div>
-
-            {/* Botões de ação */}
-            <div className="grid grid-cols-2 gap-4 mt-6">
-              <button
-                onClick={handleConfirmar}
-                className="bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2 rounded-xl font-semibold shadow-md hover:scale-[1.03] transition-transform"
-              >
-                Confirmar
-              </button>
-
-              <button
-                onClick={handleCancelar}
-                className="bg-gradient-to-r from-red-500 to-rose-600 text-white py-2 rounded-xl font-semibold shadow-md hover:scale-[1.03] transition-transform"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </main>
-
-        {/* Navbar inferior */}
-{/* Navbar inferior estilizada */}
-<nav className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-black/40 backdrop-blur-xl border-t border-white/10 shadow-[0_-2px_10px_rgba(0,0,0,0.4)]">
-  <div className="flex justify-around items-center py-3 px-6 text-white text-center">
-    {/* Logout */}
-    <button
-      onClick={handleLogout}
-      className="flex flex-col items-center gap-1 hover:text-red-400 transition-all active:scale-95"
-    >
-      <span className="text-[11px] font-medium">logout</span>
-    </button>
-
-    {/* Início */}
-    <Link
-      to="/tela-principal"
-      className="flex flex-col items-center gap-1 hover:text-blue-400 transition-all active:scale-95"
-    >
-
-      <span className="text-[11px] font-medium">Início</span>
-    </Link>
-
-    {/* Agendar (ativo) */}
-    <Link
-      to="/agendamento"
-      className="flex flex-col items-center gap-1 text-emerald-400 drop-shadow-md scale-105"
-    >
-      <span className="text-[11px] font-semibold">Agendar</span>
-    </Link>
-
-    {/* Notificações */}
-    <Link
-      to="/notificacoes"
-      className="flex flex-col items-center gap-1 hover:text-yellow-400 transition-all active:scale-95 relative"
-    >
-      <span className="text-[11px] font-medium">Notifications</span>
-      <span className="absolute top-[2px] right-[12px] w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-    </Link>
-
-          </div>
-        </nav>
+              </div>
+          ))}
       </div>
     </div>
   );
