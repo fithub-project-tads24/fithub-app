@@ -10,10 +10,14 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::with('participants')->get()->map(function ($event) {
-            $event->is_registered = $event->participants->contains(Auth::id());
-            return $event;
-        });
+        $events = Event::with('participants')
+            ->withCount('participants')
+            ->get()
+            ->map(function ($event) {
+                $event->is_registered = $event->participants->contains(Auth::id());
+                $event->spots_left = max(0, 30 - $event->participants_count);
+                return $event;
+            });
 
         return response()->json($events);
     }
@@ -42,11 +46,18 @@ class EventController extends Controller
 
     public function join($id)
     {
-        $event = Event::findOrFail($id);
-        $userId = Auth::id();
+        $event = Event::withCount('participants')->findOrFail($id);
+        $user = Auth::user();
 
-        if (!$event->participants()->where('user_id', $userId)->exists()) {
-            $event->participants()->attach($userId);
+        if ($event->participants_count >= 30) {
+            return response()->json([
+                'message' => 'Turma lotada! (RN06)',
+                'full' => true
+            ], 409);
+        }
+
+        if (!$event->participants()->where('user_id', $user->id)->exists()) {
+            $event->participants()->attach($user->id);
             return response()->json(['message' => 'Inscrição realizada!', 'success' => true]);
         }
 

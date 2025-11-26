@@ -39,11 +39,12 @@ const AgendamentoScreen = () => {
             headers: { Authorization: `Bearer ${token}` }
         });
         alert("Agendamento confirmado!");
-        fetchAgendamentos(); // Atualiza lista
+        fetchAgendamentos();
     } catch (error) {
-        alert(error.response?.data?.message || "Erro ao agendar.");
+        const msg = error.response?.data?.message || "Erro ao agendar.";
+        alert(`Atenção: ${msg}`);
     }
-  };
+};
 
   const handleCancelar = async (id) => {
       if(!confirm("Deseja cancelar?")) return;

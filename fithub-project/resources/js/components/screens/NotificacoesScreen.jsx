@@ -1,140 +1,157 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import ButtonLoginRegister from '../ui/ButtonLoginRegister';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Check, Trash2, Bell, AlertTriangle, Info, Calendar } from 'lucide-react';
 
 const NotificacoesScreen = () => {
   const navigate = useNavigate();
 
   const [notificacoes, setNotificacoes] = useState([
-    { id: 1, titulo: 'Aula confirmada', mensagem: 'Seu agendamento de Yoga (Dia 01) foi confirmado.', lida: false, hora: 'Hoje, 07:10' },
-    { id: 2, titulo: 'Lembrete de aula', mensagem: 'Zumba (Dia 02) começa amanhã às 07:00.', lida: false, hora: 'Ontem, 18:30' },
-    { id: 3, titulo: 'Novas turmas', mensagem: 'Novas turmas disponíveis na próxima semana.', lida: true, hora: 'Seg, 10:05' },
+    {
+      id: 1,
+      titulo: 'Vaga Liberada!',
+      mensagem: 'Surgiu uma vaga na lista de espera para Musculação às 18:00. Confirme agora para garantir seu lugar.',
+      tipo: 'sucesso',
+      lida: false,
+      hora: 'Agora mesmo'
+    },
+    {
+      id: 2,
+      titulo: 'Restrição Aplicada',
+      mensagem: 'Você cancelou o treino de ontem com menos de 30min de antecedência. Novos agendamentos estão bloqueados por 24h.',
+      tipo: 'erro',
+      lida: false,
+      hora: 'Ontem, 19:30'
+    },
+    {
+      id: 3,
+      titulo: 'Agendamento Confirmado',
+      mensagem: 'Seu treino de CrossFit foi confirmado dentro do bloco de horário das 10:00.',
+      tipo: 'info',
+      lida: true,
+      hora: 'Ontem, 14:00'
+    },
+    {
+      id: 4,
+      titulo: 'Atenção ao Limite',
+      mensagem: 'Você já utilizou 3 dos seus 4 agendamentos permitidos para esta semana.',
+      tipo: 'aviso',
+      lida: true,
+      hora: 'Seg, 09:00'
+    },
   ]);
 
-  const handleLogout = () => navigate('/login');
+  const handleBack = () => navigate('/tela-principal');
+
   const marcarComoLida = (id) =>
     setNotificacoes((prev) =>
       prev.map((n) => (n.id === id ? { ...n, lida: true } : n))
     );
+
   const marcarTodasComoLidas = () =>
     setNotificacoes((prev) => prev.map((n) => ({ ...n, lida: true })));
+
   const excluirNotificacao = (id) =>
     setNotificacoes((prev) => prev.filter((n) => n.id !== id));
 
+  const getStyleAndIcon = (tipo) => {
+      switch(tipo) {
+          case 'sucesso':
+            return { border: 'border-l-green-500', icon: <Check size={16} className="text-green-500" /> };
+          case 'erro':
+            return { border: 'border-l-red-500', icon: <AlertTriangle size={16} className="text-red-500" /> };
+          case 'aviso':
+            return { border: 'border-l-yellow-500', icon: <Info size={16} className="text-yellow-500" /> };
+          default:
+            return { border: 'border-l-purple-500', icon: <Calendar size={16} className="text-purple-500" /> };
+      }
+  };
+
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-between bg-[#3f3f3f] text-white relative">
-      {/* Header */}
-      <header className="w-full max-w-md px-4 pt-6 pb-2 flex flex-col items-center">
-        <img
-          src="/img/fithub-logo.png"
-          alt="Fithub Logo"
-          className="w-16 h-16 object-contain"
-        />
-        <h1 className="text-lg font-bold mt-2">NOTIFICAÇÕES</h1>
+    <div className="w-full min-h-full bg-black text-white flex flex-col p-6 relative pb-24">
+
+      {/* Header Simples */}
+      <header className="flex items-center justify-between mb-8">
+        <button
+            onClick={handleBack}
+            className="p-2 rounded-full bg-gray-800 text-gray-300 hover:bg-gray-700 transition"
+        >
+            <ArrowLeft size={20} />
+        </button>
+        <h1 className="text-xl font-bold">Notificações</h1>
+        <div className="w-10"></div> {/* Espaçador visual */}
       </header>
 
-      {/* Conteúdo principal */}
-      <main className="w-full max-w-md px-4 flex-1 mt-3 mb-24">
-        <div className="bg-[#5b5b5b] rounded-2xl p-4 shadow-lg">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-white/90">
-              {notificacoes.filter((n) => !n.lida).length} não lidas
-            </span>
+      {/* Controles de Lote */}
+      <div className="flex justify-between items-center mb-6 px-1">
+        <span className="text-sm text-gray-400">
+            {notificacoes.filter(n => !n.lida).length} não lidas
+        </span>
+        {notificacoes.some(n => !n.lida) && (
             <button
-              onClick={marcarTodasComoLidas}
-              className="text-xs text-emerald-300 hover:text-emerald-200 underline"
+                onClick={marcarTodasComoLidas}
+                className="text-xs text-purple-400 hover:text-purple-300 font-semibold uppercase tracking-wide"
             >
-              Marcar todas como lidas
+                Marcar todas como lidas
             </button>
-          </div>
+        )}
+      </div>
 
-          {notificacoes.length === 0 ? (
-            <div className="text-center text-white/80 py-6">
-              Sem notificações no momento.
+      {/* Lista de Notificações */}
+      <div className="flex-1 space-y-4 overflow-y-auto pr-1">
+        {notificacoes.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64 text-gray-600">
+                <Bell size={48} className="mb-4 opacity-50" />
+                <p>Você não tem novas notificações.</p>
             </div>
-          ) : (
-            <div className="space-y-3">
-              {notificacoes.map((n) => (
-                <div
-                  key={n.id}
-                  className={`rounded-lg p-3 border shadow-sm ${
-                    n.lida
-                      ? 'bg-white/10 border-white/10'
-                      : 'bg-white/20 border-white/30'
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1">
-                      <h2 className="font-semibold text-sm">{n.titulo}</h2>
-                      <p className="text-white/90 text-sm mt-1">{n.mensagem}</p>
-                      <p className="text-white/70 text-xs mt-2">{n.hora}</p>
+        ) : (
+            notificacoes.map((n) => {
+                const style = getStyleAndIcon(n.tipo);
+                return (
+                    <div
+                        key={n.id}
+                        className={`bg-gray-900 rounded-lg p-4 shadow-md border-l-4 ${style.border} transition-all ${n.lida ? 'opacity-60' : 'opacity-100'}`}
+                    >
+                        <div className="flex justify-between items-start gap-3">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                    {style.icon}
+                                    <h3 className={`font-bold text-sm ${n.lida ? 'text-gray-400' : 'text-white'}`}>
+                                        {n.titulo}
+                                    </h3>
+                                </div>
+                                <p className="text-xs text-gray-300 leading-relaxed pl-6">
+                                    {n.mensagem}
+                                </p>
+                                <span className="text-[10px] text-gray-500 mt-2 block pl-6 uppercase tracking-wide font-semibold">
+                                    {n.hora}
+                                </span>
+                            </div>
+
+                            {/* Botões de Ação */}
+                            <div className="flex flex-col gap-2">
+                                {!n.lida && (
+                                    <button
+                                        onClick={() => marcarComoLida(n.id)}
+                                        className="p-2 bg-gray-800 rounded-full text-green-400 hover:bg-gray-700 hover:text-green-300 transition"
+                                        title="Marcar como lida"
+                                    >
+                                        <Check size={14} />
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => excluirNotificacao(n.id)}
+                                    className="p-2 bg-gray-800 rounded-full text-red-400 hover:bg-gray-700 hover:text-red-300 transition"
+                                    title="Excluir"
+                                >
+                                    <Trash2 size={14} />
+                                </button>
+                            </div>
+                        </div>
                     </div>
-
-                    <div className="flex flex-col items-end gap-2">
-                      {!n.lida && (
-                        <button
-                          onClick={() => marcarComoLida(n.id)}
-                          className="text-xs text-emerald-300 hover:text-emerald-200 underline"
-                        >
-                          Marcar
-                        </button>
-                      )}
-                      <button
-                        onClick={() => excluirNotificacao(n.id)}
-                        className="text-xs text-red-400 hover:text-red-300 underline"
-                      >
-                        Excluir
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="pt-4">
-            <ButtonLoginRegister
-              fullWidth
-              onClick={() => navigate('/agendamento')}
-            >
-              IR PARA AGENDAMENTO
-            </ButtonLoginRegister>
-          </div>
-        </div>
-      </main>
-
-      {/* Navbar (igual à da tela de Agendamento) */}
-      <nav className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-md border-t border-white/10">
-        <div className="max-w-md mx-auto flex justify-between items-center px-6 py-3">
-          <button
-            onClick={handleLogout}
-            className="flex flex-col items-center text-white text-xs hover:text-red-400 transition-all"
-          >
-            <span className="text-[10px] mt-1">logout</span>
-          </button>
-
-          <Link
-            to="/tela-principal"
-            className="flex flex-col items-center text-white text-xs hover:text-emerald-300 transition-all"
-          >
-            <span className="text-[10px] mt-1">Início</span>
-          </Link>
-
-          <Link
-            to="/agendamento"
-            className="flex flex-col items-center text-white text-xs hover:text-emerald-300 transition-all"
-          >
-            <span className="text-[10px] mt-1">Agendar</span>
-          </Link>
-
-          <Link
-            to="/notificacoes"
-            className="flex flex-col items-center text-emerald-300 text-xs transition-all"
-          >
-            <span className="text-[10px] mt-1 font-semibold">Notifs</span>
-          </Link>
-        </div>
-      </nav>
+                );
+            })
+        )}
+      </div>
     </div>
   );
 };
